@@ -7,6 +7,8 @@ and daily aim-training plan — plus a live chat with your AI coach.
 Powered by **Google Gemini** (free tier). No build step, no dependencies — it's one
 self-contained `.html` file.
 
+**Live demo:** https://thaneshwaraa.github.io/Valorant_Aimcoach/
+
 ## Features
 
 - 🤖 **AI coaching plan** — streamed, personalized advice based on your profile (DPI,
@@ -18,7 +20,7 @@ self-contained `.html` file.
 
 ## Usage
 
-1. Open `valorant-aim-coach_3.html` in any modern browser.
+1. Open `index.html` in any modern browser (or visit the live demo above).
 2. Click **⚡ Connect AI** (top right).
 3. Paste a free Google Gemini API key from
    [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
