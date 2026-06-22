@@ -122,32 +122,9 @@ textarea::placeholder{color:var(--dim);}
 .fup{border:1px solid var(--bord2);border-radius:99px;padding:7px 15px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;background:var(--bg2);font-family:var(--sans);transition:all 0.16s;}
 .fup:hover{border-color:rgba(124,92,252,0.4);color:var(--purp2);background:rgba(124,92,252,0.07);transform:translateY(-1px);}
 .fup:disabled{opacity:0.45;cursor:default;transform:none;}
-/* ===== AI key button + connect status ===== */
-.ai-key-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--bord2);border-radius:99px;padding:6px 13px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;background:var(--bg2);font-family:var(--sans);transition:all 0.16s;}
-.ai-key-btn:hover{border-color:rgba(124,92,252,0.45);color:var(--purp2);background:rgba(124,92,252,0.08);}
-.ai-key-btn.connected{border-color:rgba(34,214,139,0.4);color:var(--green);background:rgba(34,214,139,0.08);}
-/* ===== AI chat follow-up box ===== */
-.chat-row{display:flex;gap:8px;margin-top:1.1rem;}
-.chat-row input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:11px 16px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none;transition:border-color 0.2s;}
-.chat-row input:focus{border-color:rgba(124,92,252,0.45);}
-.chat-send{border:none;border-radius:99px;padding:0 18px;background:var(--purp2);color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--sans);transition:opacity 0.16s,transform 0.16s;}
-.chat-send:hover{transform:translateY(-1px);}
-.chat-send:disabled{opacity:0.45;cursor:default;transform:none;}
+/* ===== Follow-up Q&A box ===== */
 .qa-block{margin-top:1.1rem;}
 .qa-q{font-size:13px;font-weight:800;color:var(--purp2);margin-bottom:7px;display:flex;align-items:center;gap:7px;}
-/* ===== Modal ===== */
-.modal-bg{position:fixed;inset:0;background:rgba(8,8,12,0.78);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
-.modal-bg.on{display:flex;animation:fadeUp 0.2s ease;}
-.modal{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rl);padding:1.6rem;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5);}
-.modal h3{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
-.modal p{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:14px;}
-.modal p a{color:var(--purp2);text-decoration:none;font-weight:600;}
-.modal input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;font-size:13px;font-family:var(--mono);color:var(--text);outline:none;margin-bottom:12px;transition:border-color 0.2s;}
-.modal input:focus{border-color:rgba(124,92,252,0.45);}
-.modal-actions{display:flex;gap:9px;}
-.modal-note{font-size:11px;color:var(--dim);margin-top:12px;line-height:1.55;}
-.ai-error{background:rgba(255,70,85,0.1);border:1px solid rgba(255,70,85,0.28);border-radius:var(--r);padding:11px 13px;font-size:12.5px;color:#ff8a93;line-height:1.6;margin-top:12px;}
-.ai-error b{color:#ffb3b9;}
 .tip-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.2rem;margin-bottom:9px;display:flex;gap:14px;transition:border-color 0.2s,transform 0.2s;cursor:default;}
 .tip-card:hover{border-color:var(--bord2);transform:translateY(-2px);}
 .tip-icon{width:38px;height:38px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;}
@@ -255,7 +232,6 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
   <div class="logo"><div class="logo-mark">&#9678;</div>Valorant Aim Coach</div>
   <div class="header-right">
     <div class="pulse-dot"></div>
-    <button class="ai-key-btn" id="ai-key-btn" onclick="openAISettings()" title="Connect your Claude AI key">&#9889; <span id="ai-key-label">Connect AI</span></button>
     <button class="hdr-back" id="hdr-back" onclick="hideTool()">&#8592; Back</button>
   </div>
 </header>
@@ -484,10 +460,6 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
     <div class="plan-box" id="plan-out"></div>
     <div class="fup-row" id="fup-row"></div>
     <div id="qa-thread"></div>
-    <div class="chat-row" id="chat-row" style="display:none">
-      <input id="chat-input" type="text" placeholder="Ask your AI coach anything…" onkeydown="if(event.key==='Enter')sendChat()" autocomplete="off">
-      <button class="chat-send" id="chat-send" onclick="sendChat()">Ask</button>
-    </div>
   </div>
   <div class="tpanel" id="t1"><div id="tips-container"></div></div>
   <div class="tpanel" id="t2">
@@ -719,24 +691,7 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
 </div>
 </div>
 
-<!-- ===== AI KEY MODAL ===== -->
-<div class="modal-bg" id="ai-modal" onclick="if(event.target===this)closeAISettings()">
-  <div class="modal">
-    <h3>&#9889; Connect AI (free)</h3>
-    <p>This coach is powered by Google Gemini's <b>free</b> tier. Get a free API key (no credit card) at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a> — click "Create API key", then paste it below.</p>
-    <input id="ai-key-input" type="password" placeholder="AIza..." autocomplete="off" spellcheck="false">
-    <div class="modal-actions">
-      <button class="nbtn primary" onclick="saveAISettings()">Save &amp; connect</button>
-      <button class="nbtn" onclick="closeAISettings()">Cancel</button>
-    </div>
-    <div class="modal-note">&#128274; Your key is stored only in this browser (localStorage) and sent directly to Google from your device. It never touches any other server. You can clear it anytime by reopening this dialog.</div>
-    <div class="modal-actions" style="margin-top:12px;display:none" id="ai-clear-row">
-      <button class="nbtn" onclick="clearAIKey()" style="flex:1">Disconnect &amp; remove key</button>
-    </div>
-  </div>
-</div>
-
-<footer>Built for Valorant players &nbsp;&middot;&nbsp; Powered by Google Gemini (free) &nbsp;&middot;&nbsp; Not affiliated with Riot Games</footer>
+<footer>Built for Valorant players &nbsp;&middot;&nbsp; Not affiliated with Riot Games</footer>
 
 <script>
 /* ===== COACH STATE ===== */
@@ -860,144 +815,7 @@ async function typeText(el,text,speed=7){
   cursor.remove();el.classList.remove('typing');
 }
 
-/* ===== GEN AI ENGINE (Google Gemini — free tier) ===== */
-/* Optional built-in key. Leave EMPTY in committed/shared code — never commit a real key.
-   Users connect their own free key via the "Connect AI" button (stored in their browser only). */
-const DEFAULT_AI_KEY='';
-const AI={
-  model:'gemini-2.0-flash',                       // free-tier model
-  key:localStorage.getItem('vac_ai_key')||DEFAULT_AI_KEY,
-  history:[]   // {role, content} conversation for follow-ups
-};
-
-const COACH_SYSTEM=`You are an elite Valorant aim coach with the expertise of a professional esports trainer. You give specific, actionable, encouraging advice tailored to each player's exact setup, rank, experience and self-reported struggles.
-
-Rules:
-- Be concrete and practical. Reference the player's real numbers (DPI, sensitivity, eDPI) and their stated problems directly.
-- Pro-player eDPI for Valorant sits roughly 200-450; 250-600 is a solid beginner zone. eDPI = DPI x in-game sensitivity.
-- Never recommend changing sensitivity more than necessary, and remind them muscle memory needs ~2 weeks of consistency.
-- Write in clean plain text suitable for a terminal-style box. Use UPPERCASE section headers followed by a newline. Use simple numbered or dashed lists. Do NOT use markdown symbols like #, *, **, or backticks.
-- Keep a warm, motivating, no-nonsense coaching tone. Be concise — every line should earn its place.`;
-
-function aiUpdateKeyUI(){
-  const btn=document.getElementById('ai-key-btn'),lbl=document.getElementById('ai-key-label');
-  if(AI.key){btn.classList.add('connected');lbl.textContent='AI Connected';}
-  else{btn.classList.remove('connected');lbl.textContent='Connect AI';}
-}
-
-function openAISettings(){
-  const inp=document.getElementById('ai-key-input');
-  inp.value=AI.key||'';
-  document.getElementById('ai-clear-row').style.display=AI.key?'flex':'none';
-  document.getElementById('ai-modal').classList.add('on');
-  setTimeout(()=>inp.focus(),60);
-}
-function closeAISettings(){document.getElementById('ai-modal').classList.remove('on');}
-function saveAISettings(){
-  const v=document.getElementById('ai-key-input').value.trim();
-  AI.key=v;
-  if(v)localStorage.setItem('vac_ai_key',v);else localStorage.removeItem('vac_ai_key');
-  aiUpdateKeyUI();closeAISettings();
-}
-function clearAIKey(){AI.key='';localStorage.removeItem('vac_ai_key');aiUpdateKeyUI();closeAISettings();}
-
-/* Streams a Gemini response. messages = full conversation array of {role:'user'|'assistant', content}.
-   Calls onToken(text) per chunk. Returns full text. Uses Google's free-tier streaming endpoint. */
-async function streamClaude(messages,onToken,maxTokens=4000){
-  if(!AI.key)throw new Error('NO_KEY');
-  const contents=messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
-  const url=`https://generativelanguage.googleapis.com/v1beta/models/${AI.model}:streamGenerateContent?alt=sse&key=${encodeURIComponent(AI.key)}`;
-  const res=await fetch(url,{
-    method:'POST',
-    headers:{'content-type':'application/json'},
-    body:JSON.stringify({
-      system_instruction:{parts:[{text:COACH_SYSTEM}]},
-      contents,
-      generationConfig:{maxOutputTokens:maxTokens,temperature:0.9}
-    })
-  });
-  if(!res.ok){
-    let detail='';try{const j=await res.json();detail=(j.error&&j.error.message)||JSON.stringify(j);}catch(e){detail=await res.text();}
-    const err=new Error(detail||('HTTP '+res.status));err.status=res.status;throw err;
-  }
-  const reader=res.body.getReader(),dec=new TextDecoder();let buf='',full='';
-  while(true){
-    const{done,value}=await reader.read();
-    if(done)break;
-    buf+=dec.decode(value,{stream:true});
-    let nl;
-    while((nl=buf.indexOf('\n'))>=0){
-      const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);
-      if(!line.startsWith('data:'))continue;
-      const data=line.slice(5).trim();
-      if(!data)continue;
-      try{
-        const ev=JSON.parse(data);
-        if(ev.error)throw new Error(ev.error.message||'stream error');
-        const parts=ev.candidates&&ev.candidates[0]&&ev.candidates[0].content&&ev.candidates[0].content.parts;
-        if(parts){const t=parts.map(p=>p.text||'').join('');if(t){full+=t;onToken&&onToken(t);}}
-      }catch(e){if(e instanceof SyntaxError)continue;throw e;}
-    }
-  }
-  return full;
-}
-
-/* Streams into a target element with a live cursor. Returns full text. */
-async function streamInto(el,messages,maxTokens=4000){
-  const spinner=document.getElementById('spinner');
-  el.textContent='';el.classList.add('typing');
-  const cursor=document.createElement('span');cursor.className='cursor';el.appendChild(cursor);
-  let started=false;
-  try{
-    const full=await streamClaude(messages,(t)=>{
-      if(!started){started=true;spinner.classList.remove('on');}
-      el.insertBefore(document.createTextNode(t),cursor);
-    },maxTokens);
-    return full;
-  }finally{cursor.remove();el.classList.remove('typing');spinner.classList.remove('on');}
-}
-
-function profileBlock(dpi,sens,scope,edpi){
-  const extra=(document.getElementById('extra').value||'').trim();
-  return `PLAYER PROFILE
-- Experience level: ${P.exp}
-- Current rank: ${P.rank}
-- Device: ${P.device}
-- FPS game background: ${P.fps}
-- Mousepad size: ${P.pad}
-- Aim movement style: ${P.movement}
-- Daily practice time available: ${P.hours}
-- Mouse DPI: ${dpi}
-- In-game sensitivity: ${sens}
-- Scoped sensitivity multiplier: ${scope}
-- Current eDPI: ${edpi}
-- Self-reported aim problems: ${issues.length?issues.join('; '):'none specified'}
-- Extra notes from player: ${extra||'none'}`;
-}
-
-function planPrompt(dpi,sens,scope,edpi){
-  return `${profileBlock(dpi,sens,scope,edpi)}
-
-Create my personalized Valorant aim improvement plan. Use exactly these sections, in this order, each as an UPPERCASE header on its own line:
-
-SENSITIVITY VERDICT: (judge my eDPI of ${edpi} and whether to keep or change it)
-RECOMMENDED SETTINGS: (give specific DPI, Sensitivity and resulting eDPI)
-TOP 3 MISTAKES TO FIX: (numbered, directly addressing my reported problems)
-WEEKLY AIM PLAN: (a 7-day plan that fits my available daily time)
-CROSSHAIR PLACEMENT: (one focused, level-appropriate tip)
-ENCOURAGING NOTE: (short, personal, motivating)`;
-}
-
-function aiErrorHtml(e){
-  let msg=e&&e.message?e.message:'Unknown error';
-  let hint='';
-  if(e&&(e.status===400||e.status===401||e.status===403))hint='Your API key looks invalid or restricted. Reopen "Connect AI" and paste a fresh key from Google AI Studio.';
-  else if(e&&e.status===429)hint='Free-tier rate limit hit — wait a minute and try again.';
-  else if(e&&e.status===404)hint='Model unavailable for this key/region. Try again later.';
-  else if(/Failed to fetch|NetworkError/i.test(msg))hint='Network issue — check your internet connection.';
-  return `<div class="ai-error"><b>AI request failed.</b> ${msg}${hint?'<br>'+hint:''}<br>Showing an offline plan instead — reconnect for fully AI-generated coaching.</div>`;
-}
-
+/* ===== COACHING ENGINE (offline, built-in) ===== */
 function generatePlan(dpi,sens,edpi){
   let verdictText,recDPI,recSens;
   if(edpi<250){verdictText=`Your eDPI of ${edpi} is very low. You may struggle to turn quickly in fights. We recommend raising it slightly.`;recDPI=800;recSens=0.35;}
@@ -1042,7 +860,6 @@ function renderFollowups(){
     b.onclick=()=>askFollowup(question,fallbackFn,b);
     fRow.appendChild(b);
   });
-  document.getElementById('chat-row').style.display=AI.key?'flex':'none';
 }
 
 /* Appends a Q + answer block to the thread and returns the answer element. */
@@ -1056,47 +873,14 @@ function appendQA(question){
   return a;
 }
 
-function setControlsBusy(busy){
-  document.querySelectorAll('#fup-row .fup').forEach(b=>b.disabled=busy);
-  const ci=document.getElementById('chat-input'),cs=document.getElementById('chat-send');
-  if(ci)ci.disabled=busy;if(cs){cs.disabled=busy;cs.textContent=busy?'…':'Ask';}
-}
-
-/* A suggested follow-up button. Uses AI (with conversation context) when connected, else offline template. */
+/* A suggested follow-up button — answered instantly from the built-in templates. */
 async function askFollowup(question,fallbackFn,btn){
   switchTab(0);
-  if(!AI.key){const a=appendQA(question);await typeText(a,fallbackFn(),5);return;}
-  setControlsBusy(true);
   const a=appendQA(question);
-  const spinner=document.getElementById('spinner');document.getElementById('spinner-txt').textContent='Your AI coach is replying…';
-  try{
-    AI.history.push({role:'user',content:question});
-    const ans=await streamInto(a,AI.history,2000);
-    AI.history.push({role:'assistant',content:ans});
-  }catch(e){
-    a.innerHTML='';await typeText(a,fallbackFn?fallbackFn():'Sorry, something went wrong.',4);
-    a.insertAdjacentHTML('beforeend',aiErrorHtml(e));
-  }finally{setControlsBusy(false);spinner.classList.remove('on');}
+  await typeText(a,fallbackFn(),5);
 }
 
-/* Free-form chat with the AI coach. */
-async function sendChat(){
-  const inp=document.getElementById('chat-input');const q=inp.value.trim();
-  if(!q)return;
-  if(!AI.key){openAISettings();return;}
-  inp.value='';setControlsBusy(true);
-  const a=appendQA(q);
-  const spinner=document.getElementById('spinner');document.getElementById('spinner-txt').textContent='Your AI coach is replying…';
-  try{
-    AI.history.push({role:'user',content:q});
-    const ans=await streamInto(a,AI.history,2000);
-    AI.history.push({role:'assistant',content:ans});
-  }catch(e){
-    a.innerHTML='';a.insertAdjacentHTML('beforeend',aiErrorHtml(e));
-  }finally{setControlsBusy(false);spinner.classList.remove('on');}
-}
-
-async function buildPlan(){
+function buildPlan(){
   goStep(3);
   const dpi=getDPI(),sens=getSens(),scope=getScope(),edpi=getEDPI();
   document.getElementById('result-name').textContent=`${P.rank} player · eDPI ${edpi}`;
@@ -1104,40 +888,19 @@ async function buildPlan(){
   document.getElementById('metrics').innerHTML=`<div class="metric"><div class="mlbl">DPI</div><div class="mval">${dpi}</div></div><div class="metric"><div class="mlbl">Sens</div><div class="mval">${sens}</div></div><div class="metric"><div class="mlbl">eDPI</div><div class="mval">${edpi}</div></div><div class="metric"><div class="mlbl">Scope</div><div class="mval">${scope}x</div></div><div class="metric"><div class="mlbl">Pad</div><div class="mval" style="font-size:11px">${P.pad.split(' ')[0]}</div></div><div class="metric"><div class="mlbl">Daily</div><div class="mval" style="font-size:11px">${P.hours.split(' ').slice(0,2).join(' ')}</div></div>`;
   buildTips(edpi);buildSensGuide(dpi,sens,scope,edpi);
   document.getElementById('qa-thread').innerHTML='';
-  AI.history=[];
   const planOut=document.getElementById('plan-out');
   const spinner=document.getElementById('spinner'),spinTxt=document.getElementById('spinner-txt');
 
-  if(!AI.key){
-    // Offline fallback — encourage connecting for real AI coaching.
-    const msgs=['Analyzing your eDPI...','Checking your aim issues...','Crafting your weekly drill plan...','Writing your coaching report...'];
-    spinner.classList.add('on');
-    for(let i=0;i<msgs.length;i++){spinTxt.textContent=msgs[i];await new Promise(r=>setTimeout(r,450));}
+  const msgs=['Analyzing your eDPI...','Checking your aim issues...','Crafting your weekly drill plan...','Writing your coaching report...'];
+  spinner.classList.add('on');
+  let i=0;
+  const tick=setInterval(()=>{spinTxt.textContent=msgs[i%msgs.length];i++;},450);
+  setTimeout(async()=>{
+    clearInterval(tick);
     spinner.classList.remove('on');
     await typeText(planOut,generatePlan(dpi,sens,edpi),6);
-    planOut.insertAdjacentHTML('beforeend','\n');
-    const note=document.createElement('div');note.className='ai-error';note.style.borderColor='rgba(124,92,252,0.3)';note.style.background='rgba(124,92,252,0.08)';note.style.color='#b9a8ff';
-    note.innerHTML='⚡ <b>This is an offline template.</b> Click <b>Connect AI</b> (top right) to get a fully AI-generated, personalized plan and chat live with your free Gemini-powered coach.';
-    planOut.appendChild(note);
     renderFollowups();
-    return;
-  }
-
-  // AI-generated plan (streamed)
-  spinTxt.textContent='Your AI coach is analyzing your profile…';
-  spinner.classList.add('on');
-  const prompt=planPrompt(dpi,sens,scope,edpi);
-  try{
-    AI.history.push({role:'user',content:prompt});
-    const plan=await streamInto(planOut,AI.history,4000);
-    AI.history.push({role:'assistant',content:plan});
-  }catch(e){
-    spinner.classList.remove('on');
-    await typeText(planOut,generatePlan(dpi,sens,edpi),5);
-    planOut.insertAdjacentHTML('beforeend',aiErrorHtml(e));
-    AI.history=[]; // discard broken context
-  }
-  renderFollowups();
+  },1800);
 }
 
 function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i===n));document.querySelectorAll('.tpanel').forEach((p,i)=>p.classList.toggle('on',i===n));}
@@ -1162,7 +925,6 @@ function buildSensGuide(dpi,sens,scope,edpi){
   document.getElementById('sens-rec').innerHTML=`<div style="font-size:13px;line-height:1.8;color:var(--text)">${rec}</div>`;
 }
 onSlider();
-aiUpdateKeyUI();
 
 /* ===== SENSITIVITY CONVERTER ===== */
 let convGame='cs2';

@@ -1,37 +1,27 @@
 # Valorant Aim Coach
 
-A single-file, Gen-AI–powered Valorant aim coaching web app. Answer a few questions
-about your setup and struggles and get a personalized, AI-generated sensitivity guide
-and daily aim-training plan — plus a live chat with your AI coach.
+A single-file Valorant aim coaching web app. Answer a few questions about your setup
+and struggles and get a personalized sensitivity guide and daily aim-training plan.
 
-Powered by **Google Gemini** (free tier). No build step, no dependencies — it's one
-self-contained `.html` file.
+No build step, no dependencies, no API keys — it's one self-contained `.html` file that
+runs entirely in your browser.
 
 **Live demo:** https://thaneshwaraa.github.io/Valorant_Aimcoach/
 
 ## Features
 
-- 🤖 **AI coaching plan** — streamed, personalized advice based on your profile (DPI,
-  sensitivity, eDPI, rank, experience, and self-reported aim problems).
-- 💬 **Live chat** — ask your AI coach follow-up questions with full conversation context.
+- 🎯 **Personalized coaching plan** — a sensitivity verdict, recommended settings, top
+  mistakes to fix, and a weekly aim-training plan based on your profile (DPI, sensitivity,
+  eDPI, rank, experience, and self-reported aim problems).
+- 💬 **Quick answers** — tap a follow-up question for an instant, focused tip.
 - 🎮 **Built-in tools** — sensitivity converter, crosshair builder, target trainer, and
   a sensitivity calibration game.
-- 🔌 **Offline fallback** — works without a key using built-in templates.
 
 ## Usage
 
 1. Open `index.html` in any modern browser (or visit the live demo above).
-2. Click **⚡ Connect AI** (top right).
-3. Paste a free Google Gemini API key from
-   [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
-   (starts with `AIza...`).
-4. Run the coach flow.
-
-## Security note
-
-This is a client-side app. Any API key is stored only in your browser's `localStorage`
-and sent directly to Google from your device. **Do not commit a real API key to a public
-repository** — keep it out of the source, or use the in-app "Connect AI" button instead.
+2. Click **Start coaching** and answer the questions.
+3. Get your personalized aim plan — or try one of the free tools on the home screen.
 
 ## License
 
