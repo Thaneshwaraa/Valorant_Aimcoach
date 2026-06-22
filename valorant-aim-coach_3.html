@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valorant Aim Coach</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+:root {
+  --bg:#0b0b0e; --bg2:#111116; --bg3:#18181f; --bg4:#1e1e28;
+  --border:rgba(255,255,255,0.06); --bord2:rgba(255,255,255,0.11); --bord3:rgba(255,255,255,0.18);
+  --text:#ececf4; --muted:#68687e; --dim:#42424f;
+  --red:#ff4655; --red2:#ff6b77; --red3:#ff8e98;
+  --purple:#7c5cfc; --purp2:#a48dfd;
+  --green:#22d68b; --amber:#f5a623;
+  --mono:'JetBrains Mono',monospace; --sans:'Inter',sans-serif;
+  --r:10px; --rl:14px; --rxl:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden;}
+.hero-glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(255,70,85,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;}
+header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:56px;background:rgba(11,11,14,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;letter-spacing:-0.03em;color:var(--text);text-decoration:none;}
+.logo-mark{width:32px;height:32px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(255,70,85,0.35);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
+.hdr-back{display:none;font-size:12px;font-weight:700;padding:5px 12px;border-radius:7px;border:1px solid var(--bord2);background:var(--bg3);color:var(--muted);cursor:pointer;font-family:var(--sans);transition:color 0.16s,border-color 0.16s,opacity 0.18s,transform 0.18s;}
+.hdr-back:hover{color:var(--text);border-color:var(--bord3);}
+.prog-wrap{max-width:760px;margin:0 auto;padding:1.5rem 2rem 0;position:relative;z-index:1;}
+.prog-track{display:flex;gap:5px;margin-bottom:8px;}
+.prog-seg{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background 0.5s,box-shadow 0.5s;}
+.prog-seg.done{background:var(--green);}
+.prog-seg.cur{background:var(--red);box-shadow:0 0 8px rgba(255,70,85,0.4);}
+.prog-labels{display:flex;justify-content:space-between;}
+.prog-lbl{font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--dim);transition:color 0.3s;}
+.prog-lbl.done{color:var(--green);}
+.prog-lbl.cur{color:var(--text);}
+main{max-width:760px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1;}
+.tool-wrap{max-width:760px;margin:0 auto;padding:2rem 2rem 6rem;position:relative;z-index:1;}
+.step{display:none;}
+.step.active{display:block;animation:fadeUp 0.35s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pageOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-12px) scale(0.99)}}
+@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.page-out{animation:pageOut 0.19s cubic-bezier(0.4,0,1,1) forwards;pointer-events:none;}
+.page-in{animation:pageIn 0.32s cubic-bezier(0.22,1,0.36,1) forwards;}
+.step.active.back{animation:fadeDown 0.32s cubic-bezier(0.22,1,0.36,1) forwards;}
+.step-hd{margin-bottom:2rem;}
+.step-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+.step-eyebrow::before{content:'';display:block;width:18px;height:2px;background:var(--red);border-radius:1px;}
+.step-title{font-size:26px;font-weight:800;letter-spacing:-0.035em;line-height:1.15;margin-bottom:8px;}
+.step-title span{color:var(--red);}
+.step-sub{font-size:13px;color:var(--muted);line-height:1.65;max-width:520px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.2rem 1.3rem;margin-bottom:10px;transition:border-color 0.2s;}
+.card:hover{border-color:var(--bord2);}
+.clabel{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{border:1px solid var(--bord2);border-radius:99px;padding:6px 15px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;background:var(--bg3);transition:all 0.16s;user-select:none;}
+.chip:hover{color:var(--text);border-color:var(--bord3);}
+.chip:active{transform:scale(0.95);}
+.chip.on{background:rgba(124,92,252,0.14);color:var(--purp2);border-color:rgba(124,92,252,0.4);}
+.chip.issue-on{background:rgba(255,70,85,0.12);color:var(--red2);border-color:rgba(255,70,85,0.35);}
+.rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:7px;}
+.rchip{background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--r);padding:11px 6px 9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;text-align:center;transition:all 0.16s;user-select:none;}
+.rchip:hover{color:var(--text);border-color:var(--bord3);transform:translateY(-1px);}
+.rchip:active{transform:scale(0.97);}
+.rchip.on{background:rgba(124,92,252,0.14);color:var(--purp2);border-color:rgba(124,92,252,0.4);box-shadow:0 4px 14px rgba(124,92,252,0.15);}
+.rdot{width:13px;height:13px;border-radius:50%;margin:0 auto 7px;}
+.sblock{margin-bottom:18px;}
+.sblock:last-child{margin-bottom:0;}
+.srow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.slbl{font-size:12px;font-weight:500;color:var(--muted);}
+.sval{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--text);transition:color 0.2s;}
+.sunit{font-size:11px;color:var(--muted);}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;background:var(--bg3);border-radius:3px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--red);border:3px solid var(--bg);cursor:pointer;box-shadow:0 0 10px rgba(255,70,85,0.4);transition:transform 0.1s,box-shadow 0.2s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);box-shadow:0 0 18px rgba(255,70,85,0.6);}
+.slider-hint{font-size:11px;color:var(--dim);margin-top:7px;line-height:1.55;}
+.slider-hint strong{color:var(--muted);}
+.edpi-panel{margin-top:18px;background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--rl);padding:16px 18px;display:flex;align-items:center;gap:18px;transition:border-color 0.3s;}
+.edpi-big{font-size:38px;font-weight:800;font-family:var(--mono);color:var(--text);min-width:100px;transition:color 0.4s;line-height:1;}
+.edpi-right{flex:1;}
+.edpi-lbl{font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.edpi-tag{display:inline-block;font-size:12px;font-weight:700;padding:4px 12px;border-radius:99px;margin-bottom:5px;transition:all 0.4s;}
+.edpi-tip{font-size:12px;color:var(--muted);line-height:1.5;}
+.nav{display:flex;gap:9px;margin-top:1.75rem;}
+.nbtn{flex:1;padding:12px 18px;border:1px solid var(--bord2);border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;background:var(--bg2);color:var(--muted);font-family:var(--sans);transition:all 0.16s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.nbtn:hover{color:var(--text);border-color:var(--bord3);background:var(--bg3);transform:translateY(-1px);}
+.nbtn:active{transform:scale(0.98);}
+.nbtn.primary{background:var(--red);border-color:var(--red);color:#fff;flex:2;box-shadow:0 4px 18px rgba(255,70,85,0.3);}
+.nbtn.primary:hover{background:var(--red2);border-color:var(--red2);box-shadow:0 6px 24px rgba(255,70,85,0.45);}
+textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;font-size:13px;font-family:var(--sans);color:var(--text);resize:vertical;min-height:70px;outline:none;transition:border-color 0.2s;line-height:1.6;}
+textarea:focus{border-color:rgba(124,92,252,0.5);}
+textarea::placeholder{color:var(--dim);}
+.result-hero{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rxl);padding:1.5rem 1.75rem;margin-bottom:14px;display:flex;align-items:center;gap:18px;}
+.result-avatar{width:52px;height:52px;border-radius:12px;background:rgba(255,70,85,0.15);border:1px solid rgba(255,70,85,0.25);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.result-name{font-size:17px;font-weight:800;letter-spacing:-0.025em;margin-bottom:3px;}
+.result-sub{font-size:12px;color:var(--muted);}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:14px;}
+.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;transition:border-color 0.2s,transform 0.2s;}
+.metric:hover{border-color:var(--bord2);transform:translateY(-2px);}
+.mlbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;font-weight:600;}
+.mval{font-size:17px;font-weight:700;font-family:var(--mono);color:var(--text);}
+.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:4px;margin-bottom:12px;}
+.tab{flex:1;padding:8px 10px;border-radius:7px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;text-align:center;background:transparent;border:none;font-family:var(--sans);transition:all 0.18s;}
+.tab:hover{color:var(--text);}
+.tab.on{background:var(--bg3);color:var(--text);border:1px solid var(--bord2);}
+.tpanel{display:none;}
+.tpanel.on{display:block;animation:fadeUp 0.25s ease;}
+.plan-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem 1.6rem;font-size:13.5px;line-height:1.9;color:var(--text);white-space:pre-wrap;min-height:80px;font-family:var(--sans);}
+.plan-box.typing{border-color:rgba(124,92,252,0.3);}
+.cursor{display:inline-block;width:2px;height:14px;background:var(--purp2);border-radius:1px;margin-left:2px;vertical-align:middle;animation:blink 0.8s steps(1) infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.spinner-row{display:none;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-bottom:12px;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);}
+.spinner-row.on{display:flex;}
+.spin{width:16px;height:16px;border:2px solid var(--bord2);border-top-color:var(--red);border-radius:50%;animation:rot 0.65s linear infinite;flex-shrink:0;}
+@keyframes rot{to{transform:rotate(360deg)}}
+.fup-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.2rem;}
+.fup{border:1px solid var(--bord2);border-radius:99px;padding:7px 15px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;background:var(--bg2);font-family:var(--sans);transition:all 0.16s;}
+.fup:hover{border-color:rgba(124,92,252,0.4);color:var(--purp2);background:rgba(124,92,252,0.07);transform:translateY(-1px);}
+.fup:disabled{opacity:0.45;cursor:default;transform:none;}
+/* ===== AI key button + connect status ===== */
+.ai-key-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--bord2);border-radius:99px;padding:6px 13px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;background:var(--bg2);font-family:var(--sans);transition:all 0.16s;}
+.ai-key-btn:hover{border-color:rgba(124,92,252,0.45);color:var(--purp2);background:rgba(124,92,252,0.08);}
+.ai-key-btn.connected{border-color:rgba(34,214,139,0.4);color:var(--green);background:rgba(34,214,139,0.08);}
+/* ===== AI chat follow-up box ===== */
+.chat-row{display:flex;gap:8px;margin-top:1.1rem;}
+.chat-row input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:11px 16px;font-size:13px;font-family:var(--sans);color:var(--text);outline:none;transition:border-color 0.2s;}
+.chat-row input:focus{border-color:rgba(124,92,252,0.45);}
+.chat-send{border:none;border-radius:99px;padding:0 18px;background:var(--purp2);color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--sans);transition:opacity 0.16s,transform 0.16s;}
+.chat-send:hover{transform:translateY(-1px);}
+.chat-send:disabled{opacity:0.45;cursor:default;transform:none;}
+.qa-block{margin-top:1.1rem;}
+.qa-q{font-size:13px;font-weight:800;color:var(--purp2);margin-bottom:7px;display:flex;align-items:center;gap:7px;}
+/* ===== Modal ===== */
+.modal-bg{position:fixed;inset:0;background:rgba(8,8,12,0.78);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.on{display:flex;animation:fadeUp 0.2s ease;}
+.modal{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rl);padding:1.6rem;max-width:440px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.5);}
+.modal h3{font-size:17px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+.modal p{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:14px;}
+.modal p a{color:var(--purp2);text-decoration:none;font-weight:600;}
+.modal input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;font-size:13px;font-family:var(--mono);color:var(--text);outline:none;margin-bottom:12px;transition:border-color 0.2s;}
+.modal input:focus{border-color:rgba(124,92,252,0.45);}
+.modal-actions{display:flex;gap:9px;}
+.modal-note{font-size:11px;color:var(--dim);margin-top:12px;line-height:1.55;}
+.ai-error{background:rgba(255,70,85,0.1);border:1px solid rgba(255,70,85,0.28);border-radius:var(--r);padding:11px 13px;font-size:12.5px;color:#ff8a93;line-height:1.6;margin-top:12px;}
+.ai-error b{color:#ffb3b9;}
+.tip-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.1rem 1.2rem;margin-bottom:9px;display:flex;gap:14px;transition:border-color 0.2s,transform 0.2s;cursor:default;}
+.tip-card:hover{border-color:var(--bord2);transform:translateY(-2px);}
+.tip-icon{width:38px;height:38px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;}
+.tip-num{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--dim);margin-bottom:3px;}
+.tip-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.tip-body{font-size:12px;color:var(--muted);line-height:1.7;}
+.range-row{margin-bottom:16px;}
+.range-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.range-name{font-size:12px;font-weight:600;}
+.range-nums{font-size:11px;color:var(--muted);font-family:var(--mono);}
+.range-bar{position:relative;height:7px;background:var(--bg3);border-radius:4px;overflow:visible;}
+.range-fill{position:absolute;height:100%;border-radius:4px;opacity:0.4;transition:opacity 0.3s;}
+.range-bar:hover .range-fill{opacity:0.6;}
+.range-marker{position:absolute;top:-5px;width:17px;height:17px;border-radius:50%;background:var(--red);border:2.5px solid var(--bg);transform:translateX(-50%);display:none;box-shadow:0 0 10px rgba(255,70,85,0.5);animation:markerPop 0.4s ease;}
+@keyframes markerPop{from{transform:translateX(-50%) scale(0)}to{transform:translateX(-50%) scale(1)}}
+footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);backdrop-filter:blur(14px);border-top:1px solid var(--border);padding:10px 2rem;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--dim);z-index:50;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bord2);border-radius:3px;}
+#welcome{min-height:calc(100vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 1rem 6rem;position:relative;z-index:1;}
+.welcome-icon{width:72px;height:72px;background:var(--red);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 1.5rem;box-shadow:0 0 40px rgba(255,70,85,0.35);animation:heroFloat 3s ease-in-out infinite;}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.welcome-title{font-size:42px;font-weight:800;letter-spacing:-0.04em;line-height:1.1;margin-bottom:16px;}
+.welcome-title em{color:var(--red);font-style:normal;}
+.welcome-sub{font-size:16px;color:var(--muted);max-width:440px;line-height:1.65;margin:0 auto 2.5rem;}
+.welcome-features{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem;}
+.wfeat{background:var(--bg2);border:1px solid var(--bord2);border-radius:99px;padding:7px 16px;font-size:12px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.start-btn{display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:15px 36px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--sans);letter-spacing:-0.02em;box-shadow:0 6px 28px rgba(255,70,85,0.4);transition:all 0.18s;}
+.start-btn:hover{background:var(--red2);box-shadow:0 8px 36px rgba(255,70,85,0.55);transform:translateY(-2px);}
+.start-btn:active{transform:scale(0.97);}
+/* Tool cards on welcome */
+.tool-section-divider{width:100%;max-width:700px;margin:2.5rem 0 1.5rem;display:flex;align-items:center;gap:12px;}
+.tool-section-divider span{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dim);white-space:nowrap;}
+.tool-section-divider::before,.tool-section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.tool-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:900px;}
+.tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:border-color 0.2s,transform 0.22s cubic-bezier(0.22,1,0.36,1),box-shadow 0.22s;}
+.tool-card:hover{border-color:var(--bord3);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);}
+.tool-card:active{transform:translateY(-2px) scale(0.98);box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+.tc-icon{font-size:22px;margin-bottom:10px;}
+.tc-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.tc-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+/* Number input */
+.num-inp{background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--r);padding:10px 14px;font-size:22px;font-weight:800;font-family:var(--mono);color:var(--text);width:100%;outline:none;transition:border-color 0.2s;}
+.num-inp:focus{border-color:rgba(124,92,252,0.5);}
+.num-inp::placeholder{color:var(--dim);font-size:16px;font-weight:400;}
+/* Converter result */
+.conv-result{background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--rxl);padding:1.5rem 1.75rem;margin-top:14px;display:none;}
+.conv-result.show{display:block;animation:fadeUp 0.3s ease;}
+.conv-big{font-size:52px;font-weight:800;font-family:var(--mono);color:var(--red);line-height:1;margin-bottom:6px;}
+.conv-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.conv-note{font-size:12px;color:var(--dim);margin-top:12px;line-height:1.65;padding:10px 12px;background:var(--bg2);border-radius:8px;}
+.conv-edpi{font-size:13px;color:var(--muted);margin-top:10px;font-family:var(--mono);}
+/* Crosshair builder */
+.xhair-layout{display:grid;grid-template-columns:1fr 260px;gap:14px;align-items:start;}
+.xhair-canvas-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;display:flex;align-items:center;justify-content:center;aspect-ratio:1;}
+#xhair-canvas{display:block;width:100%;height:100%;}
+.xhair-code-box{background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--r);padding:10px 13px;font-size:12px;font-family:var(--mono);color:var(--purp2);word-break:break-all;margin-bottom:8px;min-height:40px;line-height:1.6;}
+.copy-btn{width:100%;padding:9px;background:rgba(124,92,252,0.14);border:1px solid rgba(124,92,252,0.3);border-radius:var(--r);color:var(--purp2);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all 0.16s;}
+.copy-btn:hover{background:rgba(124,92,252,0.22);border-color:rgba(124,92,252,0.5);}
+.copy-btn.copied{background:rgba(34,214,139,0.14);border-color:rgba(34,214,139,0.3);color:var(--green);}
+.xhair-color-chip{border:2px solid transparent;border-radius:99px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg3);transition:all 0.16s;user-select:none;}
+.xhair-color-chip:hover{opacity:0.85;}
+.xhair-color-chip.on{border-color:currentColor;background:rgba(255,255,255,0.08);}
+/* Target trainer */
+#trainer-canvas{display:block;width:100%;border-radius:var(--rl);cursor:crosshair;border:1px solid var(--border);}
+.trainer-hud{display:flex;gap:8px;margin-bottom:10px;}
+.hud-stat{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 13px;text-align:center;}
+.hud-val{font-size:22px;font-weight:800;font-family:var(--mono);color:var(--text);}
+.hud-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-top:2px;}
+.diff-chip{border:1px solid var(--bord2);border-radius:99px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;background:var(--bg3);transition:all 0.16s;user-select:none;}
+.diff-chip:hover{color:var(--text);}
+.diff-chip.on{background:rgba(255,70,85,0.14);color:var(--red2);border-color:rgba(255,70,85,0.4);}
+.trainer-results{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rxl);padding:1.75rem;text-align:center;display:none;}
+.trainer-results.show{display:block;animation:fadeUp 0.35s ease;}
+.res-score{font-size:64px;font-weight:800;font-family:var(--mono);color:var(--red);line-height:1;}
+.res-grade{font-size:14px;font-weight:700;margin:8px 0 4px;}
+.res-sub{font-size:12px;color:var(--muted);}
+.res-stats{display:flex;gap:10px;margin-top:1.25rem;justify-content:center;}
+.res-stat{background:var(--bg3);border-radius:var(--r);padding:10px 20px;text-align:center;}
+.res-stat-val{font-size:18px;font-weight:700;font-family:var(--mono);}
+.res-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+/* Sensitivity calibration game */
+.sg-prog-bar{display:flex;gap:3px;margin-bottom:10px;flex-wrap:wrap;}
+.sg-dot{width:14px;height:14px;border-radius:50%;background:var(--border);transition:background 0.2s,box-shadow 0.2s;}
+.sg-dot.hit{background:var(--green);box-shadow:0 0 5px rgba(34,214,139,0.5);}
+.sg-dot.miss{background:var(--red);}
+.sg-dot.cur{background:var(--amber);box-shadow:0 0 8px rgba(245,166,35,0.6);animation:pulse 0.8s ease-in-out infinite;}
+.sg-phase-badge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:5px 13px;border-radius:99px;margin-bottom:10px;}
+.sg-verdict-box{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rl);padding:1.35rem 1.5rem;margin-top:14px;display:none;}
+.sg-verdict-box.show{display:block;animation:fadeUp 0.35s ease;}
+.sg-verdict-title{font-size:19px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
+.sg-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
+@media(max-width:600px){
+  main{padding:1.25rem 1rem 5rem;}header{padding:0 1rem;}
+  .prog-wrap{padding:1rem 1rem 0;}.rank-grid{grid-template-columns:repeat(3,1fr);}
+  .step-title{font-size:21px;}.result-hero{flex-direction:column;gap:10px;}
+  .welcome-title{font-size:30px;}.tool-grid{grid-template-columns:1fr 1fr;}.sg-stat-grid{grid-template-columns:repeat(2,1fr);}
+  .xhair-layout{grid-template-columns:1fr;}.tool-wrap{padding:1.25rem 1rem 5rem;}
+}
+</style>
+</head>
+<body>
+<div class="hero-glow"></div>
+<header>
+  <div class="logo"><div class="logo-mark">&#9678;</div>Valorant Aim Coach</div>
+  <div class="header-right">
+    <div class="pulse-dot"></div>
+    <button class="ai-key-btn" id="ai-key-btn" onclick="openAISettings()" title="Connect your Claude AI key">&#9889; <span id="ai-key-label">Connect AI</span></button>
+    <button class="hdr-back" id="hdr-back" onclick="hideTool()">&#8592; Back</button>
+  </div>
+</header>
+
+<!-- ===== WELCOME ===== -->
+<div id="welcome">
+  <div class="welcome-icon">&#127919;</div>
+  <h1 class="welcome-title">Build your <em>perfect</em><br>Valorant aim</h1>
+  <p class="welcome-sub">Answer a few questions about your setup and struggles. Get a personalized sensitivity guide and daily aim training plan — instantly.</p>
+  <div class="welcome-features">
+    <div class="wfeat">&#9889; Sensitivity calculator</div>
+    <div class="wfeat">&#127919; eDPI analysis</div>
+    <div class="wfeat">&#128200; Rank-based tips</div>
+    <div class="wfeat">&#127775; Personalized coaching plan</div>
+  </div>
+  <button class="start-btn" onclick="startCoach()">Start coaching</button>
+  <div class="tool-section-divider"><span>Free tools</span></div>
+  <div class="tool-grid">
+    <div class="tool-card" onclick="showTool('sens')">
+      <div class="tc-icon">&#127918;</div>
+      <div class="tc-name">Sens Converter</div>
+      <div class="tc-desc">CS2 / Apex / OW2 → Valorant equivalent instantly</div>
+    </div>
+    <div class="tool-card" onclick="showTool('xhair')">
+      <div class="tc-icon">&#127919;</div>
+      <div class="tc-name">Crosshair Builder</div>
+      <div class="tc-desc">Live preview + Valorant import code to copy</div>
+    </div>
+    <div class="tool-card" onclick="showTool('trainer')">
+      <div class="tc-icon">&#9889;</div>
+      <div class="tc-name">Target Trainer</div>
+      <div class="tc-desc">Click targets, see your accuracy &amp; reaction time</div>
+    </div>
+    <div class="tool-card" style="border-color:rgba(255,70,85,0.22);background:rgba(255,70,85,0.04)" onclick="showTool('sg')">
+      <div class="tc-icon">&#127918;</div>
+      <div class="tc-name">Sens Game</div>
+      <div class="tc-desc">Shoot &amp; get a verdict on your eDPI calibration</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== COACH FLOW ===== -->
+<div id="coach-flow" style="display:none">
+<div class="prog-wrap">
+  <div class="prog-track">
+    <div class="prog-seg cur" id="p0"></div><div class="prog-seg" id="p1"></div>
+    <div class="prog-seg" id="p2"></div><div class="prog-seg" id="p3"></div>
+  </div>
+  <div class="prog-labels">
+    <span class="prog-lbl cur" id="pl0">Profile</span>
+    <span class="prog-lbl" id="pl1">Sensitivity</span>
+    <span class="prog-lbl" id="pl2">Issues</span>
+    <span class="prog-lbl" id="pl3">Aim Plan</span>
+  </div>
+</div>
+<main>
+<div class="step active" id="s0">
+  <div class="step-hd">
+    <div class="step-eyebrow">Step 1 of 3</div>
+    <h2 class="step-title">Who are <span>you?</span></h2>
+    <p class="step-sub">Help us understand your current level so your aim plan is accurate, not generic.</p>
+  </div>
+  <div class="card">
+    <div class="clabel">How long have you been playing Valorant?</div>
+    <div class="chips">
+      <div class="chip on" onclick="pick(this,'exp','Brand new — less than 1 week')">Brand new</div>
+      <div class="chip" onclick="pick(this,'exp','1 to 4 weeks')">1–4 weeks</div>
+      <div class="chip" onclick="pick(this,'exp','1 to 3 months')">1–3 months</div>
+      <div class="chip" onclick="pick(this,'exp','3 to 6 months')">3–6 months</div>
+      <div class="chip" onclick="pick(this,'exp','6+ months')">6+ months</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel">Current rank</div>
+    <div class="rank-grid">
+      <div class="rchip on" onclick="pick(this,'rank','Unranked')"><div class="rdot" style="background:#444"></div>Unranked</div>
+      <div class="rchip" onclick="pick(this,'rank','Iron')"><div class="rdot" style="background:#8c8c8c"></div>Iron</div>
+      <div class="rchip" onclick="pick(this,'rank','Bronze')"><div class="rdot" style="background:#cd7f32"></div>Bronze</div>
+      <div class="rchip" onclick="pick(this,'rank','Silver')"><div class="rdot" style="background:#c0c0c0"></div>Silver</div>
+      <div class="rchip" onclick="pick(this,'rank','Gold')"><div class="rdot" style="background:#ffd700"></div>Gold</div>
+      <div class="rchip" onclick="pick(this,'rank','Platinum')"><div class="rdot" style="background:#00c8ff"></div>Platinum</div>
+      <div class="rchip" onclick="pick(this,'rank','Diamond+')"><div class="rdot" style="background:#b66fff"></div>Diamond+</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel">Your device</div>
+    <div class="chips">
+      <div class="chip on" onclick="pick(this,'device','PC with gaming mouse')">PC + gaming mouse</div>
+      <div class="chip" onclick="pick(this,'device','Laptop with external mouse')">Laptop + mouse</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel">FPS gaming background</div>
+    <div class="chips">
+      <div class="chip on" onclick="pick(this,'fps','No — Valorant is my first FPS')">First FPS ever</div>
+      <div class="chip" onclick="pick(this,'fps','Played CS2 or other PC FPS before')">PC FPS (CS2, OW, etc.)</div>
+    </div>
+  </div>
+  <div class="nav"><button class="nbtn primary" onclick="goStep(1)">Set my sensitivity &#8594;</button></div>
+</div>
+
+<div class="step" id="s1">
+  <div class="step-hd">
+    <div class="step-eyebrow">Step 2 of 3</div>
+    <h2 class="step-title">Your <span>mouse</span> setup</h2>
+    <p class="step-sub">Drag sliders to match your current settings — or leave as default if you don't know yet.</p>
+  </div>
+  <div class="card">
+    <div class="clabel">Mouse DPI</div>
+    <div class="sblock">
+      <div class="srow"><span class="slbl">DPI — check your mouse software or use 800</span><span class="sval" id="dpi-v">800</span></div>
+      <input type="range" min="100" max="3200" step="100" value="800" id="dpi" oninput="onSlider()">
+    </div>
+    <div class="slider-hint">&#128161; <strong>Common defaults:</strong> Logitech = 800 · Razer = 1600 · Generic = 800–1200</div>
+  </div>
+  <div class="card">
+    <div class="clabel">In-game sensitivity</div>
+    <div class="sblock">
+      <div class="srow"><span class="slbl">Valorant Settings &rarr; Controls &rarr; Sensitivity</span><span class="sval" id="sens-v">0.35</span></div>
+      <input type="range" min="1" max="200" step="1" value="35" id="sens" oninput="onSlider()">
+    </div>
+    <div class="slider-hint">&#128161; Valorant default is <strong>0.40</strong>. Beginners do well at <strong>0.30–0.50</strong></div>
+  </div>
+  <div class="card">
+    <div class="clabel">Scoped / ADS sensitivity multiplier</div>
+    <div class="sblock">
+      <div class="srow"><span class="slbl">1.00 = same speed when zoomed in</span><span class="sval" id="scope-v">1.00</span><span class="sunit">&times;</span></div>
+      <input type="range" min="10" max="200" step="5" value="100" id="scope" oninput="onSlider()">
+    </div>
+    <div class="slider-hint">&#128161; Leave at <strong>1.00</strong> as a beginner. Advanced players lower to 0.85–0.95</div>
+  </div>
+  <div class="edpi-panel" id="edpi-panel">
+    <div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:5px;font-weight:700">Your eDPI</div>
+      <div class="edpi-big" id="edpi-num">280</div>
+    </div>
+    <div class="edpi-right">
+      <div class="edpi-lbl">DPI &times; Sensitivity</div>
+      <div class="edpi-tag" id="edpi-tag">Calculating...</div>
+      <div class="edpi-tip" id="edpi-tip"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:10px">
+    <div class="clabel">Mousepad size</div>
+    <div class="chips">
+      <div class="chip on" onclick="pick(this,'pad','Small under 30cm')">Small &lt;30cm</div>
+      <div class="chip" onclick="pick(this,'pad','Medium 30 to 45cm')">Medium 30–45cm</div>
+      <div class="chip" onclick="pick(this,'pad','Large or XL over 45cm')">Large / XL &gt;45cm</div>
+      <div class="chip" onclick="pick(this,'pad','No mousepad desk surface')">No pad</div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nbtn" onclick="goStep(0)">&#8592; Back</button>
+    <button class="nbtn primary" onclick="goStep(2)">Tell us your issues &#8594;</button>
+  </div>
+</div>
+
+<div class="step" id="s2">
+  <div class="step-hd">
+    <div class="step-eyebrow">Step 3 of 3</div>
+    <h2 class="step-title">What's <span>going wrong?</span></h2>
+    <p class="step-sub">Pick every aim problem you experience. The more specific you are, the better the plan.</p>
+  </div>
+  <div class="card">
+    <div class="clabel">Your aim problems — tap all that apply</div>
+    <div class="chips" id="issue-chips">
+      <div class="chip" onclick="toggleIssue(this,'I overshoot — my crosshair flies past the target')">Overshoot targets</div>
+      <div class="chip" onclick="toggleIssue(this,'I undershoot — I stop before reaching the target')">Undershoot targets</div>
+      <div class="chip" onclick="toggleIssue(this,'My aim feels shaky and hard to control')">Shaky aim</div>
+      <div class="chip" onclick="toggleIssue(this,'I cannot track moving enemies smoothly')">Cant track enemies</div>
+      <div class="chip" onclick="toggleIssue(this,'My crosshair is always too low — I aim at bodies not heads')">Crosshair too low</div>
+      <div class="chip" onclick="toggleIssue(this,'I panic and spray wildly when I spot an enemy')">Panic spray</div>
+      <div class="chip" onclick="toggleIssue(this,'I miss my first shot even when I have time to aim')">Miss first shot</div>
+      <div class="chip" onclick="toggleIssue(this,'I lose most 1v1 duels even when I spot them first')">Lose 1v1 duels</div>
+      <div class="chip" onclick="toggleIssue(this,'My aim is fine in aim trainers but bad in real games')">Good trainer bad game</div>
+      <div class="chip" onclick="toggleIssue(this,'My wrist or arm gets tired or sore after a while')">Wrist or arm fatigue</div>
+    </div>
+    <div style="font-size:11px;color:var(--dim);margin-top:9px" id="issue-count">0 issues selected</div>
+  </div>
+  <div class="card">
+    <div class="clabel">How do you move the mouse when aiming?</div>
+    <div class="chips">
+      <div class="chip on" onclick="pick(this,'movement','Mostly wrist movement')">Mostly wrist</div>
+      <div class="chip" onclick="pick(this,'movement','Mostly arm movement')">Mostly arm</div>
+      <div class="chip" onclick="pick(this,'movement','Mix of wrist and arm')">Mix of both</div>
+      <div class="chip" onclick="pick(this,'movement','I have no idea')">Not sure</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel">How much do you play per day?</div>
+    <div class="chips">
+      <div class="chip on" onclick="pick(this,'hours','Less than 30 minutes')">Under 30 min</div>
+      <div class="chip" onclick="pick(this,'hours','30 minutes to 1 hour')">30 min–1 hr</div>
+      <div class="chip" onclick="pick(this,'hours','1 to 2 hours')">1–2 hours</div>
+      <div class="chip" onclick="pick(this,'hours','2 to 4 hours')">2–4 hours</div>
+      <div class="chip" onclick="pick(this,'hours','More than 4 hours')">4+ hours</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel">Anything else? (optional)</div>
+    <textarea id="extra" placeholder="e.g. I switched from mobile, my desk is small, I want to reach Gold..."></textarea>
+  </div>
+  <div class="nav">
+    <button class="nbtn" onclick="goStep(1)">&#8592; Back</button>
+    <button class="nbtn primary" onclick="buildPlan()">&#9889; Build my aim plan</button>
+  </div>
+</div>
+
+<div class="step" id="s3">
+  <div class="step-hd">
+    <div class="step-eyebrow">Your personalized plan</div>
+    <h2 class="step-title">Aim <span>improvement</span> plan</h2>
+  </div>
+  <div class="result-hero">
+    <div class="result-avatar">&#127919;</div>
+    <div><div class="result-name" id="result-name">Loading...</div><div class="result-sub" id="result-sub"></div></div>
+  </div>
+  <div class="metric-grid" id="metrics"></div>
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab(0)">&#127775; Your Plan</button>
+    <button class="tab" onclick="switchTab(1)">&#127919; Aim Tips</button>
+    <button class="tab" onclick="switchTab(2)">&#128200; Sensitivity</button>
+  </div>
+  <div class="tpanel on" id="t0">
+    <div class="spinner-row" id="spinner"><div class="spin"></div><span id="spinner-txt">Building your aim plan...</span></div>
+    <div class="plan-box" id="plan-out"></div>
+    <div class="fup-row" id="fup-row"></div>
+    <div id="qa-thread"></div>
+    <div class="chat-row" id="chat-row" style="display:none">
+      <input id="chat-input" type="text" placeholder="Ask your AI coach anything…" onkeydown="if(event.key==='Enter')sendChat()" autocomplete="off">
+      <button class="chat-send" id="chat-send" onclick="sendChat()">Ask</button>
+    </div>
+  </div>
+  <div class="tpanel" id="t1"><div id="tips-container"></div></div>
+  <div class="tpanel" id="t2">
+    <div class="card"><div class="clabel">Your sensitivity breakdown</div><div id="sens-detail"></div></div>
+    <div class="card"><div class="clabel">eDPI reference by rank</div><div id="edpi-ranges"></div></div>
+    <div class="card"><div class="clabel">Our recommendation for you</div><div id="sens-rec"></div></div>
+  </div>
+  <div class="nav" style="margin-top:1.75rem">
+    <button class="nbtn primary" onclick="restart()">&#8635; Start over</button>
+  </div>
+</div>
+</main>
+</div>
+
+<!-- ===== SENSITIVITY CONVERTER ===== -->
+<div id="sens-tool" style="display:none">
+<div class="tool-wrap">
+  <div class="step-hd">
+    <div class="step-eyebrow">Tool</div>
+    <h2 class="step-title">Sensitivity <span>Converter</span></h2>
+    <p class="step-sub">Enter your sensitivity from another game and get the exact Valorant equivalent.</p>
+  </div>
+  <div class="card">
+    <div class="clabel">Source game</div>
+    <div class="chips" id="game-chips">
+      <div class="chip on" onclick="pickGame(this,'cs2')">CS2</div>
+      <div class="chip" onclick="pickGame(this,'apex')">Apex Legends</div>
+      <div class="chip" onclick="pickGame(this,'ow2')">Overwatch 2</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="clabel" id="sens-input-label">Your CS2 sensitivity</div>
+    <input class="num-inp" id="source-sens-inp" type="number" min="0.01" max="100" step="0.01" placeholder="e.g. 1.5" oninput="convertSens()">
+  </div>
+  <div class="card">
+    <div class="clabel">Your DPI <span style="font-weight:400;text-transform:none;letter-spacing:0">(for eDPI calculation)</span></div>
+    <input class="num-inp" id="conv-dpi-inp" type="number" min="100" max="3200" step="100" value="800" oninput="convertSens()">
+  </div>
+  <div class="conv-result" id="conv-result">
+    <div class="conv-label">Valorant sensitivity</div>
+    <div class="conv-big" id="conv-val">—</div>
+    <div class="conv-edpi" id="conv-edpi"></div>
+    <div class="conv-note" id="conv-note"></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== CROSSHAIR BUILDER ===== -->
+<div id="xhair-tool" style="display:none">
+<div class="tool-wrap">
+  <div class="step-hd">
+    <div class="step-eyebrow">Tool</div>
+    <h2 class="step-title">Crosshair <span>Builder</span></h2>
+    <p class="step-sub">Adjust the sliders, see a live preview, then copy the import code into Valorant.</p>
+  </div>
+  <div class="xhair-layout">
+    <div>
+      <div class="card">
+        <div class="clabel">Pro Presets</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="diff-chip" onclick="loadXhairPreset('TenZ')">TenZ</button>
+          <button class="diff-chip" onclick="loadXhairPreset('ScreaM')">ScreaM</button>
+          <button class="diff-chip" onclick="loadXhairPreset('yay')">yay</button>
+          <button class="diff-chip" onclick="loadXhairPreset('cNed')">cNed</button>
+          <button class="diff-chip" onclick="loadXhairPreset('Dot')">Dot only</button>
+          <button class="diff-chip" onclick="loadXhairPreset('Mini')">Mini</button>
+        </div>
+        <div style="font-size:11px;color:var(--dim);margin-top:8px">Click any preset to load it, then tweak to your liking</div>
+      </div>
+      <div class="card">
+        <div class="clabel">Color</div>
+        <div class="chips" id="xhair-color-chips">
+          <div class="xhair-color-chip on" style="color:#00ff7f" onclick="xhairPickColor(this,'green')">Green</div>
+          <div class="xhair-color-chip" style="color:#ffffff" onclick="xhairPickColor(this,'white')">White</div>
+          <div class="xhair-color-chip" style="color:#00eeff" onclick="xhairPickColor(this,'cyan')">Cyan</div>
+          <div class="xhair-color-chip" style="color:#ffee00" onclick="xhairPickColor(this,'yellow')">Yellow</div>
+          <div class="xhair-color-chip" style="color:#ff4655" onclick="xhairPickColor(this,'red')">Red</div>
+          <div class="xhair-color-chip" style="color:#5599ff" onclick="xhairPickColor(this,'blue')">Blue</div>
+          <div class="xhair-color-chip" style="color:#ff66cc" onclick="xhairPickColor(this,'pink')">Pink</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="clabel">Inner lines</div>
+        <div class="sblock">
+          <div class="srow"><span class="slbl">Length</span><span class="sval" id="xl-lbl">4</span></div>
+          <input type="range" min="1" max="10" step="1" value="4" id="xl" oninput="xhairUpdate()">
+        </div>
+        <div class="sblock">
+          <div class="srow"><span class="slbl">Offset (gap from center)</span><span class="sval" id="xo-lbl">2</span></div>
+          <input type="range" min="1" max="8" step="1" value="2" id="xo" oninput="xhairUpdate()">
+        </div>
+        <div class="sblock">
+          <div class="srow"><span class="slbl">Thickness</span><span class="sval" id="xt-lbl">2</span></div>
+          <input type="range" min="1" max="6" step="1" value="2" id="xt" oninput="xhairUpdate()">
+        </div>
+        <div class="sblock">
+          <div class="srow"><span class="slbl">Opacity</span><span class="sval" id="xa-lbl">1.0</span></div>
+          <input type="range" min="2" max="10" step="1" value="10" id="xa" oninput="xhairUpdate()">
+        </div>
+      </div>
+      <div class="card">
+        <div class="clabel">Center dot</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--muted)">
+            <input type="checkbox" id="xhair-dot" onchange="xhairUpdate()" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer"> Show center dot
+          </label>
+        </div>
+        <div class="sblock" id="dot-opacity-row" style="display:none">
+          <div class="srow"><span class="slbl">Dot opacity</span><span class="sval" id="xda-lbl">1.0</span></div>
+          <input type="range" min="2" max="10" step="1" value="10" id="xda" oninput="xhairUpdate()">
+        </div>
+      </div>
+      <div class="card">
+        <div class="clabel">Outline</div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--muted)">
+          <input type="checkbox" id="xhair-outline" onchange="xhairUpdate()" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer"> Show outline
+        </label>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--dim)">Background:</span>
+        <button class="diff-chip on" id="xbg-dark" onclick="setXhairBg('dark',this)" style="font-size:11px;padding:3px 11px">Dark</button>
+        <button class="diff-chip" id="xbg-gray" onclick="setXhairBg('gray',this)" style="font-size:11px;padding:3px 11px">Gray</button>
+        <button class="diff-chip" id="xbg-bright" onclick="setXhairBg('bright',this)" style="font-size:11px;padding:3px 11px">Bright</button>
+      </div>
+      <div class="xhair-canvas-wrap" style="margin-bottom:10px">
+        <canvas id="xhair-canvas" width="260" height="260"></canvas>
+      </div>
+      <div class="clabel" style="margin-bottom:6px">Valorant import code</div>
+      <div class="xhair-code-box" id="xhair-code">0;P;c;1;h;0;0l;4;0o;2;0a;1;0t;2;1b;0</div>
+      <button class="copy-btn" id="copy-btn" onclick="copyXhairCode()">&#128203; Copy code</button>
+      <div style="font-size:11px;color:var(--dim);margin-top:10px;line-height:1.6">
+        In Valorant: Settings → Crosshairs → Import Profile Code → paste the code above.
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== TARGET TRAINER ===== -->
+<div id="trainer-tool" style="display:none">
+<div class="tool-wrap">
+  <div class="step-hd">
+    <div class="step-eyebrow">Tool</div>
+    <h2 class="step-title">Target <span>Trainer</span></h2>
+    <p class="step-sub">Click 20 targets as fast and accurately as possible. Measures your accuracy and reaction time.</p>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="clabel">Difficulty</div>
+    <div class="chips" id="diff-chips">
+      <div class="diff-chip" onclick="setDiff(this,'easy')">Easy — large targets</div>
+      <div class="diff-chip on" onclick="setDiff(this,'medium')">Medium</div>
+      <div class="diff-chip" onclick="setDiff(this,'hard')">Hard — small targets</div>
+    </div>
+  </div>
+  <div class="trainer-hud">
+    <div class="hud-stat"><div class="hud-val" id="tr-hits">–</div><div class="hud-lbl">Hits</div></div>
+    <div class="hud-stat"><div class="hud-val" id="tr-acc">–</div><div class="hud-lbl">Accuracy</div></div>
+    <div class="hud-stat"><div class="hud-val" id="tr-rt">–</div><div class="hud-lbl">Avg React (ms)</div></div>
+    <div class="hud-stat"><div class="hud-val" id="tr-remain">20</div><div class="hud-lbl">Remaining</div></div>
+  </div>
+  <canvas id="trainer-canvas" width="720" height="380"></canvas>
+  <div class="trainer-results" id="trainer-results">
+    <div class="res-score" id="res-score">0/20</div>
+    <div class="res-grade" id="res-grade"></div>
+    <div class="res-sub" id="res-sub-text"></div>
+    <div class="res-stats">
+      <div class="res-stat"><div class="res-stat-val" id="res-acc">0%</div><div class="res-stat-lbl">Accuracy</div></div>
+      <div class="res-stat"><div class="res-stat-val" id="res-rt">–</div><div class="res-stat-lbl">Avg React</div></div>
+      <div class="res-stat"><div class="res-stat-val" id="res-best">–</div><div class="res-stat-lbl">Best React</div></div>
+    </div>
+    <button class="nbtn primary" style="margin-top:1.25rem;flex:unset;width:auto;padding:12px 32px" onclick="restartTrainer()">&#8635; Try again</button>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+    <button class="nbtn primary" id="trainer-start-btn" onclick="startTrainer()" style="flex:unset;width:auto;padding:12px 28px">&#9654; Start</button>
+    <span style="font-size:12px;color:var(--dim)">Click the canvas area when a red target appears</span>
+  </div>
+</div>
+</div>
+
+<!-- ===== SENSITIVITY CALIBRATION GAME ===== -->
+<div id="sg-tool" style="display:none">
+<div class="tool-wrap">
+  <div class="step-hd">
+    <div class="step-eyebrow">Mini-Game</div>
+    <h2 class="step-title">Sensitivity <span>Calibration</span></h2>
+    <p class="step-sub">10 flick shots then 10 precision shots. The game tracks your overshoot and undershoot pattern to judge whether your eDPI is correctly calibrated.</p>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="clabel">Your eDPI (DPI &times; in-game sensitivity)</div>
+    <input class="num-inp" id="sg-edpi" type="number" min="50" max="3000" value="320" placeholder="e.g. 320" style="font-size:28px">
+    <div class="slider-hint" style="margin-top:8px">&#128161; Example: 800 DPI &times; 0.40 sensitivity = eDPI 320 &nbsp;|&nbsp; Higher eDPI = faster &amp; harder flick shots</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;align-items:center">
+      <span style="font-size:11px;color:var(--dim)">Quick start:</span>
+      <button class="diff-chip" onclick="document.getElementById('sg-edpi').value=320" style="font-size:11px;padding:4px 13px">&#127775; New player — eDPI 320</button>
+      <button class="diff-chip" onclick="document.getElementById('sg-edpi').value=400" style="font-size:11px;padding:4px 13px">eDPI 400</button>
+      <button class="diff-chip" onclick="document.getElementById('sg-edpi').value=260" style="font-size:11px;padding:4px 13px">eDPI 260</button>
+      <button class="diff-chip" onclick="document.getElementById('sg-edpi').value=600" style="font-size:11px;padding:4px 13px">eDPI 600</button>
+    </div>
+  </div>
+  <div class="sg-prog-bar" id="sg-prog"></div>
+  <div class="trainer-hud">
+    <div class="hud-stat"><div class="hud-val" id="sg-hits">–</div><div class="hud-lbl">Hits</div></div>
+    <div class="hud-stat"><div class="hud-val" id="sg-acc">–</div><div class="hud-lbl">Accuracy</div></div>
+    <div class="hud-stat"><div class="hud-val" id="sg-over">–</div><div class="hud-lbl">Overshoot</div></div>
+    <div class="hud-stat"><div class="hud-val" id="sg-remain">20</div><div class="hud-lbl">Remaining</div></div>
+  </div>
+  <div style="margin-bottom:8px;min-height:30px" id="sg-phase-wrap">
+    <span class="sg-phase-badge" id="sg-phase-badge" style="background:rgba(255,70,85,0.15);color:#ff6b77;border:1px solid rgba(255,70,85,0.3)">&#9889; Phase 1 — Flick Shots (10)</span>
+  </div>
+  <canvas id="sg-canvas" width="720" height="380" style="display:block;width:100%;border-radius:var(--rl);cursor:crosshair;border:1px solid var(--border);margin-bottom:12px"></canvas>
+  <div class="sg-verdict-box" id="sg-verdict">
+    <div class="sg-verdict-title" id="sg-vt"></div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:4px" id="sg-va"></div>
+    <div class="sg-stat-grid">
+      <div class="hud-stat"><div class="hud-val" id="sg-r-total">–</div><div class="hud-lbl">Total hits</div></div>
+      <div class="hud-stat"><div class="hud-val" id="sg-r-flick">–</div><div class="hud-lbl">Flick acc</div></div>
+      <div class="hud-stat"><div class="hud-val" id="sg-r-prec">–</div><div class="hud-lbl">Precision acc</div></div>
+      <div class="hud-stat"><div class="hud-val" id="sg-r-rt">–</div><div class="hud-lbl">Avg react</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);padding:11px 14px;background:var(--bg3);border-radius:9px;line-height:1.8;white-space:pre-line" id="sg-breakdown"></div>
+    <button class="nbtn primary" style="margin-top:1.25rem;flex:unset;width:auto;padding:12px 32px" onclick="startSG()">&#8635; Try again</button>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+    <button class="nbtn primary" id="sg-start-btn" onclick="startSG()" style="flex:unset;width:auto;padding:12px 28px">&#9654; Start</button>
+    <span style="font-size:12px;color:var(--dim)">Miss a target? Click shows up so you can see your overshoot direction</span>
+  </div>
+</div>
+</div>
+
+<!-- ===== AI KEY MODAL ===== -->
+<div class="modal-bg" id="ai-modal" onclick="if(event.target===this)closeAISettings()">
+  <div class="modal">
+    <h3>&#9889; Connect AI (free)</h3>
+    <p>This coach is powered by Google Gemini's <b>free</b> tier. Get a free API key (no credit card) at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a> — click "Create API key", then paste it below.</p>
+    <input id="ai-key-input" type="password" placeholder="AIza..." autocomplete="off" spellcheck="false">
+    <div class="modal-actions">
+      <button class="nbtn primary" onclick="saveAISettings()">Save &amp; connect</button>
+      <button class="nbtn" onclick="closeAISettings()">Cancel</button>
+    </div>
+    <div class="modal-note">&#128274; Your key is stored only in this browser (localStorage) and sent directly to Google from your device. It never touches any other server. You can clear it anytime by reopening this dialog.</div>
+    <div class="modal-actions" style="margin-top:12px;display:none" id="ai-clear-row">
+      <button class="nbtn" onclick="clearAIKey()" style="flex:1">Disconnect &amp; remove key</button>
+    </div>
+  </div>
+</div>
+
+<footer>Built for Valorant players &nbsp;&middot;&nbsp; Powered by Google Gemini (free) &nbsp;&middot;&nbsp; Not affiliated with Riot Games</footer>
+
+<script>
+/* ===== COACH STATE ===== */
+const P={exp:'Brand new — less than 1 week',rank:'Unranked',device:'PC with gaming mouse',fps:'No — Valorant is my first FPS',pad:'Small under 30cm',movement:'Mostly wrist movement',hours:'Less than 30 minutes'};
+let issues=[],curStep=0;
+
+/* ===== TOOL NAV ===== */
+const TOOLS=['sens','xhair','trainer','sg'];
+
+function _getActivePage(){
+  const ids=['welcome','coach-flow',...TOOLS.map(t=>t+'-tool')];
+  return ids.map(id=>document.getElementById(id)).find(el=>el&&el.style.display!=='none');
+}
+
+function _showHdrBack(){
+  const btn=document.getElementById('hdr-back');
+  btn.style.opacity='0';btn.style.transform='translateX(-8px)';btn.style.display='inline-block';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{btn.style.opacity='1';btn.style.transform='translateX(0)';}));
+}
+function _hideHdrBack(){
+  const btn=document.getElementById('hdr-back');
+  btn.style.opacity='0';btn.style.transform='translateX(-8px)';
+  setTimeout(()=>{btn.style.display='none';btn.style.opacity='';btn.style.transform='';},180);
+}
+
+function _transitionTo(incoming,setup){
+  const outgoing=_getActivePage();
+  function doShow(){
+    if(outgoing){outgoing.style.display='none';outgoing.classList.remove('page-out','page-in');}
+    setup();
+    void incoming.offsetWidth;
+    incoming.classList.add('page-in');
+    setTimeout(()=>incoming.classList.remove('page-in'),360);
+  }
+  if(outgoing&&outgoing!==incoming){
+    outgoing.classList.add('page-out');
+    setTimeout(doShow,190);
+  }else{doShow();}
+}
+
+function showTool(name){
+  const target=document.getElementById(name+'-tool');
+  _transitionTo(target,()=>{
+    document.getElementById('welcome').style.display='none';
+    document.getElementById('coach-flow').style.display='none';
+    TOOLS.forEach(t=>document.getElementById(t+'-tool').style.display='none');
+    target.style.display='block';
+    _showHdrBack();
+    if(name==='xhair'){setTimeout(()=>{loadXhairFromStorage();xhairUpdate();},50);}
+    if(name==='trainer'){initTrainerCanvas();}
+    if(name==='sg'){initSGCanvas();}
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+function hideTool(){
+  const welcome=document.getElementById('welcome');
+  _transitionTo(welcome,()=>{
+    TOOLS.forEach(t=>document.getElementById(t+'-tool').style.display='none');
+    _hideHdrBack();
+    welcome.style.display='flex';
+    stopTrainer();sg.active=false;
+  });
+}
+
+/* ===== COACH FLOW ===== */
+function startCoach(){
+  const coach=document.getElementById('coach-flow');
+  _transitionTo(coach,()=>{
+    document.getElementById('welcome').style.display='none';
+    coach.style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+function restart(){
+  issues=[];document.querySelectorAll('.chip.issue-on').forEach(c=>c.classList.remove('issue-on'));
+  document.getElementById('issue-count').textContent='0 issues selected';document.getElementById('extra').value='';
+  goStep(0,true);
+  const welcome=document.getElementById('welcome');
+  _transitionTo(welcome,()=>{
+    document.getElementById('coach-flow').style.display='none';
+    welcome.style.display='flex';
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+}
+function pick(el,key,val){el.parentElement.querySelectorAll('.chip,.rchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');P[key]=val;el.style.transform='scale(0.93)';setTimeout(()=>el.style.transform='',120);}
+function toggleIssue(el,val){if(el.classList.contains('issue-on')){el.classList.remove('issue-on');issues=issues.filter(v=>v!==val);}else{el.classList.add('issue-on');issues.push(val);}const c=document.getElementById('issue-count');c.textContent=issues.length===0?'0 issues selected':`${issues.length} issue${issues.length>1?'s':''} selected`;}
+function goStep(n,silent){
+  const goingBack=n<curStep;
+  const prev=document.getElementById('s'+curStep);
+  const next=document.getElementById('s'+n);
+  prev.classList.remove('active','back');
+  if(goingBack)next.classList.add('back'); else next.classList.remove('back');
+  next.classList.add('active');
+  setTimeout(()=>next.classList.remove('back'),380);
+  for(let i=0;i<4;i++){const s=document.getElementById('p'+i),l=document.getElementById('pl'+i);s.classList.remove('done','cur');l.classList.remove('done','cur');if(i<n){s.classList.add('done');l.classList.add('done');}else if(i===n){s.classList.add('cur');l.classList.add('cur');}}
+  curStep=n;if(!silent)window.scrollTo({top:0,behavior:'smooth'});
+}
+function getDPI(){return parseInt(document.getElementById('dpi').value);}
+function getSens(){return(parseInt(document.getElementById('sens').value)/100).toFixed(2);}
+function getScope(){return(parseInt(document.getElementById('scope').value)/100).toFixed(2);}
+function getEDPI(){return Math.round(getDPI()*parseFloat(getSens()));}
+
+function onSlider(){
+  const dpi=getDPI(),sens=getSens(),edpi=getEDPI();
+  document.getElementById('dpi-v').textContent=dpi;document.getElementById('sens-v').textContent=sens;document.getElementById('scope-v').textContent=getScope();document.getElementById('edpi-num').textContent=edpi;
+  const tag=document.getElementById('edpi-tag'),tip=document.getElementById('edpi-tip'),panel=document.getElementById('edpi-panel'),numEl=document.getElementById('edpi-num');
+  let txt,bg,col,tipTxt,borderCol;
+  if(edpi<150){txt='Very low';bg='rgba(245,166,35,0.15)';col='#f5a623';borderCol='rgba(245,166,35,0.3)';tipTxt='Try increasing to 280–400 eDPI.';}
+  else if(edpi<400){txt='Great for Valorant';bg='rgba(34,214,139,0.13)';col='#22d68b';borderCol='rgba(34,214,139,0.25)';tipTxt='Pro-level range. Stick with this and focus on consistency.';}
+  else if(edpi<650){txt='Good starting point';bg='rgba(34,214,139,0.1)';col='#22d68b';borderCol='rgba(34,214,139,0.2)';tipTxt='Solid range for beginners. Balanced speed and control.';}
+  else if(edpi<1000){txt='Slightly high';bg='rgba(245,166,35,0.12)';col='#f5a623';borderCol='rgba(245,166,35,0.25)';tipTxt='Consider lowering by 10% each week for better precision.';}
+  else if(edpi<1800){txt='Too high for precision';bg='rgba(255,70,85,0.1)';col='#ff6b77';borderCol='rgba(255,70,85,0.25)';tipTxt='This hurts your accuracy. Lower sensitivity significantly.';}
+  else{txt='Reduce immediately';bg='rgba(255,70,85,0.15)';col='#ff4655';borderCol='rgba(255,70,85,0.35)';tipTxt='Way too fast. Set to 800 DPI + 0.40 sens to start fresh.';}
+  tag.textContent=txt;tag.style.background=bg;tag.style.color=col;tip.textContent=tipTxt;numEl.style.color=col;panel.style.borderColor=borderCol;
+}
+
+async function typeText(el,text,speed=7){
+  el.textContent='';el.classList.add('typing');
+  const cursor=document.createElement('span');cursor.className='cursor';el.appendChild(cursor);
+  for(let i=0;i<text.length;i++){el.insertBefore(document.createTextNode(text[i]),cursor);if(i%4===0)await new Promise(r=>setTimeout(r,speed));}
+  cursor.remove();el.classList.remove('typing');
+}
+
+/* ===== GEN AI ENGINE (Google Gemini — free tier) ===== */
+/* Optional built-in key. Leave EMPTY in committed/shared code — never commit a real key.
+   Users connect their own free key via the "Connect AI" button (stored in their browser only). */
+const DEFAULT_AI_KEY='';
+const AI={
+  model:'gemini-2.0-flash',                       // free-tier model
+  key:localStorage.getItem('vac_ai_key')||DEFAULT_AI_KEY,
+  history:[]   // {role, content} conversation for follow-ups
+};
+
+const COACH_SYSTEM=`You are an elite Valorant aim coach with the expertise of a professional esports trainer. You give specific, actionable, encouraging advice tailored to each player's exact setup, rank, experience and self-reported struggles.
+
+Rules:
+- Be concrete and practical. Reference the player's real numbers (DPI, sensitivity, eDPI) and their stated problems directly.
+- Pro-player eDPI for Valorant sits roughly 200-450; 250-600 is a solid beginner zone. eDPI = DPI x in-game sensitivity.
+- Never recommend changing sensitivity more than necessary, and remind them muscle memory needs ~2 weeks of consistency.
+- Write in clean plain text suitable for a terminal-style box. Use UPPERCASE section headers followed by a newline. Use simple numbered or dashed lists. Do NOT use markdown symbols like #, *, **, or backticks.
+- Keep a warm, motivating, no-nonsense coaching tone. Be concise — every line should earn its place.`;
+
+function aiUpdateKeyUI(){
+  const btn=document.getElementById('ai-key-btn'),lbl=document.getElementById('ai-key-label');
+  if(AI.key){btn.classList.add('connected');lbl.textContent='AI Connected';}
+  else{btn.classList.remove('connected');lbl.textContent='Connect AI';}
+}
+
+function openAISettings(){
+  const inp=document.getElementById('ai-key-input');
+  inp.value=AI.key||'';
+  document.getElementById('ai-clear-row').style.display=AI.key?'flex':'none';
+  document.getElementById('ai-modal').classList.add('on');
+  setTimeout(()=>inp.focus(),60);
+}
+function closeAISettings(){document.getElementById('ai-modal').classList.remove('on');}
+function saveAISettings(){
+  const v=document.getElementById('ai-key-input').value.trim();
+  AI.key=v;
+  if(v)localStorage.setItem('vac_ai_key',v);else localStorage.removeItem('vac_ai_key');
+  aiUpdateKeyUI();closeAISettings();
+}
+function clearAIKey(){AI.key='';localStorage.removeItem('vac_ai_key');aiUpdateKeyUI();closeAISettings();}
+
+/* Streams a Gemini response. messages = full conversation array of {role:'user'|'assistant', content}.
+   Calls onToken(text) per chunk. Returns full text. Uses Google's free-tier streaming endpoint. */
+async function streamClaude(messages,onToken,maxTokens=4000){
+  if(!AI.key)throw new Error('NO_KEY');
+  const contents=messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${AI.model}:streamGenerateContent?alt=sse&key=${encodeURIComponent(AI.key)}`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify({
+      system_instruction:{parts:[{text:COACH_SYSTEM}]},
+      contents,
+      generationConfig:{maxOutputTokens:maxTokens,temperature:0.9}
+    })
+  });
+  if(!res.ok){
+    let detail='';try{const j=await res.json();detail=(j.error&&j.error.message)||JSON.stringify(j);}catch(e){detail=await res.text();}
+    const err=new Error(detail||('HTTP '+res.status));err.status=res.status;throw err;
+  }
+  const reader=res.body.getReader(),dec=new TextDecoder();let buf='',full='';
+  while(true){
+    const{done,value}=await reader.read();
+    if(done)break;
+    buf+=dec.decode(value,{stream:true});
+    let nl;
+    while((nl=buf.indexOf('\n'))>=0){
+      const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);
+      if(!line.startsWith('data:'))continue;
+      const data=line.slice(5).trim();
+      if(!data)continue;
+      try{
+        const ev=JSON.parse(data);
+        if(ev.error)throw new Error(ev.error.message||'stream error');
+        const parts=ev.candidates&&ev.candidates[0]&&ev.candidates[0].content&&ev.candidates[0].content.parts;
+        if(parts){const t=parts.map(p=>p.text||'').join('');if(t){full+=t;onToken&&onToken(t);}}
+      }catch(e){if(e instanceof SyntaxError)continue;throw e;}
+    }
+  }
+  return full;
+}
+
+/* Streams into a target element with a live cursor. Returns full text. */
+async function streamInto(el,messages,maxTokens=4000){
+  const spinner=document.getElementById('spinner');
+  el.textContent='';el.classList.add('typing');
+  const cursor=document.createElement('span');cursor.className='cursor';el.appendChild(cursor);
+  let started=false;
+  try{
+    const full=await streamClaude(messages,(t)=>{
+      if(!started){started=true;spinner.classList.remove('on');}
+      el.insertBefore(document.createTextNode(t),cursor);
+    },maxTokens);
+    return full;
+  }finally{cursor.remove();el.classList.remove('typing');spinner.classList.remove('on');}
+}
+
+function profileBlock(dpi,sens,scope,edpi){
+  const extra=(document.getElementById('extra').value||'').trim();
+  return `PLAYER PROFILE
+- Experience level: ${P.exp}
+- Current rank: ${P.rank}
+- Device: ${P.device}
+- FPS game background: ${P.fps}
+- Mousepad size: ${P.pad}
+- Aim movement style: ${P.movement}
+- Daily practice time available: ${P.hours}
+- Mouse DPI: ${dpi}
+- In-game sensitivity: ${sens}
+- Scoped sensitivity multiplier: ${scope}
+- Current eDPI: ${edpi}
+- Self-reported aim problems: ${issues.length?issues.join('; '):'none specified'}
+- Extra notes from player: ${extra||'none'}`;
+}
+
+function planPrompt(dpi,sens,scope,edpi){
+  return `${profileBlock(dpi,sens,scope,edpi)}
+
+Create my personalized Valorant aim improvement plan. Use exactly these sections, in this order, each as an UPPERCASE header on its own line:
+
+SENSITIVITY VERDICT: (judge my eDPI of ${edpi} and whether to keep or change it)
+RECOMMENDED SETTINGS: (give specific DPI, Sensitivity and resulting eDPI)
+TOP 3 MISTAKES TO FIX: (numbered, directly addressing my reported problems)
+WEEKLY AIM PLAN: (a 7-day plan that fits my available daily time)
+CROSSHAIR PLACEMENT: (one focused, level-appropriate tip)
+ENCOURAGING NOTE: (short, personal, motivating)`;
+}
+
+function aiErrorHtml(e){
+  let msg=e&&e.message?e.message:'Unknown error';
+  let hint='';
+  if(e&&(e.status===400||e.status===401||e.status===403))hint='Your API key looks invalid or restricted. Reopen "Connect AI" and paste a fresh key from Google AI Studio.';
+  else if(e&&e.status===429)hint='Free-tier rate limit hit — wait a minute and try again.';
+  else if(e&&e.status===404)hint='Model unavailable for this key/region. Try again later.';
+  else if(/Failed to fetch|NetworkError/i.test(msg))hint='Network issue — check your internet connection.';
+  return `<div class="ai-error"><b>AI request failed.</b> ${msg}${hint?'<br>'+hint:''}<br>Showing an offline plan instead — reconnect for fully AI-generated coaching.</div>`;
+}
+
+function generatePlan(dpi,sens,edpi){
+  let verdictText,recDPI,recSens;
+  if(edpi<250){verdictText=`Your eDPI of ${edpi} is very low. You may struggle to turn quickly in fights. We recommend raising it slightly.`;recDPI=800;recSens=0.35;}
+  else if(edpi<=600){verdictText=`Your eDPI of ${edpi} is excellent for Valorant — right in the pro-player sweet spot. Keep it.`;recDPI=dpi;recSens=parseFloat(sens);}
+  else if(edpi<=1000){verdictText=`Your eDPI of ${edpi} is slightly high. Lowering it gradually will improve your precision.`;recDPI=dpi;recSens=Math.max(0.20,parseFloat(sens)-0.10);}
+  else{verdictText=`Your eDPI of ${edpi} is too fast for consistent precision. A reset to proven settings is strongly recommended.`;recDPI=800;recSens=0.40;}
+  const recEDPI=Math.round(recDPI*recSens);
+  const settingsNote=recEDPI===edpi?'Your current settings are solid — do not change them for 2 weeks minimum.':'Stick with these for 14 days before judging. Muscle memory takes time to form.';
+  const issueMap=[['overshoot','Overshoot: Slow your flick to 85% of the distance, then use a tiny wrist correction to land on target.'],['undershoot','Undershoot: Commit fully to each flick — trust your arm and do not stop halfway.'],['shaky','Shaky aim: Practice slow, deliberate tracking in Practice Range. Control must come before speed.'],['track','Tracking: In Deathmatch, follow one enemy without shooting for 30 seconds. This drills smooth tracking.'],['too low','Crosshair height: Before every peek, place your crosshair at the top of the doorframe — that is head level.'],['panic','Panic spray: Before each game, repeat to yourself: "2 bullets, pause, 2 bullets." Practice in the range first.'],['first shot','First shot: Fully stop moving before every shot — even one step while firing spreads bullets unpredictably.'],['1v1','Duels: Pre-aim corners before peeking. Whoever pre-aims wins the duel — not whoever reacts faster.'],['trainer','Trainer vs game: In real games, aim at specific corner angles — not open air like aim trainers use.'],['fatigue','Fatigue: Loosen your grip. A tight grip causes arm fatigue fast — hold the mouse like something fragile.']];
+  const fixes=[];
+  for(const[kw,fix]of issueMap){if(issues.some(i=>i.toLowerCase().includes(kw))){fixes.push(fix);if(fixes.length>=3)break;}}
+  const defaults=['Core: Stop moving completely before every shot — movement spread ruins accuracy at any range.','Core: Keep crosshair at head height at all times, not at floor or chest level.','Core: Spend 10 minutes in Practice Range before every session to warm up muscle memory.'];
+  let di=0;while(fixes.length<3)fixes.push(defaults[di++]);
+  let weeklyPlan;
+  if(P.hours.includes('30 minutes')||P.hours.includes('Under')){weeklyPlan='Days 1–2: 5 min Practice Range (flick mode, medium bots) + 1 Deathmatch\nDays 3–4: 5 min crosshair placement drill (aim at corner tops) + 1 Deathmatch\nDays 5–6: 5 min tracking on moving bots + 1 Unrated game, focus on stopping before shots\nDay 7: 1 casual Unrated — focus on crosshair height only, no pressure';}
+  else if(P.hours.includes('1 hour')||P.hours.includes('30 min')){weeklyPlan='Days 1–2: 10 min Practice Range (flicking + tracking) → 2 Deathmatches, stop before every shot\nDays 3–4: 10 min Range (crosshair placement on corners) → 1–2 Unrated games\nDays 5–6: 15 min Deathmatch only — focus on micro-adjustments after big flicks\nDay 7: Active rest — watch one game VOD, note where pro crosshairs sit at corners';}
+  else{weeklyPlan='Days 1–2: 15 min Range warmup (flick, track, precision) → 3–4 Deathmatches, no full sprays\nDays 3–4: 15 min Range → 3 Ranked games — one focus goal per game (e.g. "head level only")\nDays 5–6: 20 min pure Deathmatch — count first-bullet kills per game\nDay 7: Rest or light play — 1 Unrated max, review your stats afterward';}
+  const isNew=P.exp.includes('Brand new')||P.exp.includes('1 to 4 weeks');
+  const crosshairTip=isNew?'As a beginner, place your crosshair at the TOP of any door or wall before turning corners — imagine a laser at that exact height and keep it there at all times.':'Pick one common spot on your most-played map. Before you peek it, your crosshair must already be pre-aimed there. Add one new spot each week.';
+  const noteMap={'Brand new':'You started. That already puts you ahead of everyone who just watched streams. Your aim will feel awkward for 2–3 weeks — that is exactly what progress looks like.','1 to 4':'The first month is the steepest part of the learning curve. Keep your settings steady and let the repetitions accumulate.','1 to 3 months':'You are past the hardest part. Small deliberate habits compound fast now. One month of focused drilling at this stage can look like a full rank jump.','3 to 6':'You have the foundation. What separates your rank from the next is usually one or two specific habits — and you have just identified them.','6+':'At your experience level, improvement is about refining, not rebuilding. Track your Deathmatch K/D weekly to measure real progress.'};
+  const noteKey=Object.keys(noteMap).find(k=>P.exp.includes(k))||'1 to 3 months';
+  return `SENSITIVITY VERDICT:\n${verdictText}\n\nRECOMMENDED SETTINGS:\nDPI: ${recDPI}\nSensitivity: ${recSens.toFixed(2)}\neDPI: ${recEDPI}\n${settingsNote}\n\nTOP 3 MISTAKES TO FIX:\n1. ${fixes[0]}\n2. ${fixes[1]}\n3. ${fixes[2]}\n\nWEEKLY AIM PLAN:\n${weeklyPlan}\n\nCROSSHAIR PLACEMENT:\n${crosshairTip}\n\nENCOURAGING NOTE:\n${noteMap[noteKey]}`;
+}
+
+function getDailyRoutine(){return `Your 15-Minute Daily Aim Routine\n\n1. Practice Range (5 min)\n   Open Valorant → Practice → Range → Medium bots, Eliminate mode.\n   2 min on stationary flicks. 3 min on moving bots. One deliberate shot at a time.\n\n2. Deathmatch (10 min)\n   One goal only: stop moving before every shot. Do not chase kills.\n   Let players come to you, pre-aim at head height, fire only when fully still.\n\nDo not add more until this routine feels automatic — about 10 days. Consistency beats volume every single time.`;}
+function getCrosshairAdvice(){return `Best Beginner Crosshair Settings\n\nStyle: Classic (not Dot, not Circle)\nColor: Cyan or Green (stands out against most map backgrounds)\nOutline: ON, opacity 0.8\nInner Lines: length 3–4, thickness 1–2, offset 2\nOuter Lines: OFF\nCenter Dot: OFF\n\nWhy this works: clear without obscuring your target. The gap trains you to aim at a precise point.\n\nKey reminder: crosshair placement matters far more than appearance. The skill is WHERE you put it.`;}
+function getImprovementTimeline(){return `Realistic Aim Improvement Timeline\n\nWeek 1–2: Your aim may feel WORSE. This is normal — new habits conflict with old reflexes until they override them.\n\nWeek 3–4: Crosshair placement becomes more automatic. You will stop moving before shooting without thinking about it.\n\nMonth 2: Clear jump in first-bullet accuracy. Deathmatch K/D will be noticeably higher.\n\nMonth 3: You will spot aim mistakes in other players that you used to make yourself. That is the sign the habit has formed.\n\nMost important rule: do not change sensitivity during this period. One change resets roughly 2 weeks of muscle memory.`;}
+function getBeginnerAgents(){return `Best 2 Agents for Beginners Focusing on Aim\n\n1. Reyna\n   Why: Directly rewards good aim. Kill → heal. Two kills → escape safely.\n   Gives immediate feedback on whether your mechanics are working.\n   Avoid her ultimate until you understand the flow of rounds.\n\n2. Sage\n   Why: Her Slow Orb and wall let you stand still and aim carefully — perfect for the stop-before-shooting habit. Team also appreciates heals.\n\nAvoid: Jett, Chamber, Neon until at least Iron 2. Their movement abilities mask aim problems.\n\nTip: Play one agent per 5 games. Learn abilities in Practice mode first so your mental energy stays on aim.`;}
+
+/* Suggested follow-up questions — answered live by the AI (or by offline templates as fallback). */
+const FOLLOWUPS=[
+  ['How do I practice aim daily?','Give me a focused daily aim-practice routine I can actually stick to with my available time.',getDailyRoutine],
+  ['Best crosshair for beginners?','What crosshair settings should I use and why, for my experience level?',getCrosshairAdvice],
+  ['How long to improve?','Give me a realistic timeline for how my aim will improve if I follow this plan.',getImprovementTimeline],
+  ['Best beginner agents?','Which agents should I play to improve my aim fastest, and which to avoid for now?',getBeginnerAgents]
+];
+
+function renderFollowups(){
+  const fRow=document.getElementById('fup-row');fRow.innerHTML='';
+  FOLLOWUPS.forEach(([lbl,question,fallbackFn])=>{
+    const b=document.createElement('button');b.className='fup';b.textContent=lbl+' →';
+    b.onclick=()=>askFollowup(question,fallbackFn,b);
+    fRow.appendChild(b);
+  });
+  document.getElementById('chat-row').style.display=AI.key?'flex':'none';
+}
+
+/* Appends a Q + answer block to the thread and returns the answer element. */
+function appendQA(question){
+  const thread=document.getElementById('qa-thread');
+  const wrap=document.createElement('div');wrap.className='qa-block';
+  const q=document.createElement('div');q.className='qa-q';q.textContent='❓ '+question;
+  const a=document.createElement('div');a.className='plan-box';
+  wrap.appendChild(q);wrap.appendChild(a);thread.appendChild(wrap);
+  a.scrollIntoView({behavior:'smooth',block:'nearest'});
+  return a;
+}
+
+function setControlsBusy(busy){
+  document.querySelectorAll('#fup-row .fup').forEach(b=>b.disabled=busy);
+  const ci=document.getElementById('chat-input'),cs=document.getElementById('chat-send');
+  if(ci)ci.disabled=busy;if(cs){cs.disabled=busy;cs.textContent=busy?'…':'Ask';}
+}
+
+/* A suggested follow-up button. Uses AI (with conversation context) when connected, else offline template. */
+async function askFollowup(question,fallbackFn,btn){
+  switchTab(0);
+  if(!AI.key){const a=appendQA(question);await typeText(a,fallbackFn(),5);return;}
+  setControlsBusy(true);
+  const a=appendQA(question);
+  const spinner=document.getElementById('spinner');document.getElementById('spinner-txt').textContent='Your AI coach is replying…';
+  try{
+    AI.history.push({role:'user',content:question});
+    const ans=await streamInto(a,AI.history,2000);
+    AI.history.push({role:'assistant',content:ans});
+  }catch(e){
+    a.innerHTML='';await typeText(a,fallbackFn?fallbackFn():'Sorry, something went wrong.',4);
+    a.insertAdjacentHTML('beforeend',aiErrorHtml(e));
+  }finally{setControlsBusy(false);spinner.classList.remove('on');}
+}
+
+/* Free-form chat with the AI coach. */
+async function sendChat(){
+  const inp=document.getElementById('chat-input');const q=inp.value.trim();
+  if(!q)return;
+  if(!AI.key){openAISettings();return;}
+  inp.value='';setControlsBusy(true);
+  const a=appendQA(q);
+  const spinner=document.getElementById('spinner');document.getElementById('spinner-txt').textContent='Your AI coach is replying…';
+  try{
+    AI.history.push({role:'user',content:q});
+    const ans=await streamInto(a,AI.history,2000);
+    AI.history.push({role:'assistant',content:ans});
+  }catch(e){
+    a.innerHTML='';a.insertAdjacentHTML('beforeend',aiErrorHtml(e));
+  }finally{setControlsBusy(false);spinner.classList.remove('on');}
+}
+
+async function buildPlan(){
+  goStep(3);
+  const dpi=getDPI(),sens=getSens(),scope=getScope(),edpi=getEDPI();
+  document.getElementById('result-name').textContent=`${P.rank} player · eDPI ${edpi}`;
+  document.getElementById('result-sub').textContent=`${P.exp} · ${P.fps}`;
+  document.getElementById('metrics').innerHTML=`<div class="metric"><div class="mlbl">DPI</div><div class="mval">${dpi}</div></div><div class="metric"><div class="mlbl">Sens</div><div class="mval">${sens}</div></div><div class="metric"><div class="mlbl">eDPI</div><div class="mval">${edpi}</div></div><div class="metric"><div class="mlbl">Scope</div><div class="mval">${scope}x</div></div><div class="metric"><div class="mlbl">Pad</div><div class="mval" style="font-size:11px">${P.pad.split(' ')[0]}</div></div><div class="metric"><div class="mlbl">Daily</div><div class="mval" style="font-size:11px">${P.hours.split(' ').slice(0,2).join(' ')}</div></div>`;
+  buildTips(edpi);buildSensGuide(dpi,sens,scope,edpi);
+  document.getElementById('qa-thread').innerHTML='';
+  AI.history=[];
+  const planOut=document.getElementById('plan-out');
+  const spinner=document.getElementById('spinner'),spinTxt=document.getElementById('spinner-txt');
+
+  if(!AI.key){
+    // Offline fallback — encourage connecting for real AI coaching.
+    const msgs=['Analyzing your eDPI...','Checking your aim issues...','Crafting your weekly drill plan...','Writing your coaching report...'];
+    spinner.classList.add('on');
+    for(let i=0;i<msgs.length;i++){spinTxt.textContent=msgs[i];await new Promise(r=>setTimeout(r,450));}
+    spinner.classList.remove('on');
+    await typeText(planOut,generatePlan(dpi,sens,edpi),6);
+    planOut.insertAdjacentHTML('beforeend','\n');
+    const note=document.createElement('div');note.className='ai-error';note.style.borderColor='rgba(124,92,252,0.3)';note.style.background='rgba(124,92,252,0.08)';note.style.color='#b9a8ff';
+    note.innerHTML='⚡ <b>This is an offline template.</b> Click <b>Connect AI</b> (top right) to get a fully AI-generated, personalized plan and chat live with your free Gemini-powered coach.';
+    planOut.appendChild(note);
+    renderFollowups();
+    return;
+  }
+
+  // AI-generated plan (streamed)
+  spinTxt.textContent='Your AI coach is analyzing your profile…';
+  spinner.classList.add('on');
+  const prompt=planPrompt(dpi,sens,scope,edpi);
+  try{
+    AI.history.push({role:'user',content:prompt});
+    const plan=await streamInto(planOut,AI.history,4000);
+    AI.history.push({role:'assistant',content:plan});
+  }catch(e){
+    spinner.classList.remove('on');
+    await typeText(planOut,generatePlan(dpi,sens,edpi),5);
+    planOut.insertAdjacentHTML('beforeend',aiErrorHtml(e));
+    AI.history=[]; // discard broken context
+  }
+  renderFollowups();
+}
+
+function switchTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',i===n));document.querySelectorAll('.tpanel').forEach((p,i)=>p.classList.toggle('on',i===n));}
+
+function buildTips(edpi){
+  const tips=[{i:'🎯',bg:'rgba(255,70,85,0.13)',title:'Crosshair at head height always',body:'Before you peek any corner, your crosshair should already be at head level — not the floor, not the chest. Pre-aim at exactly where enemy heads appear. This wins more duels than any sensitivity change.'},{i:'⏸️',bg:'rgba(124,92,252,0.13)',title:'Stop moving before you shoot',body:'Valorant bullets spread randomly while moving. Press S to stop, then fire. This is the single most impactful habit for a new player — accurate bullets beat fast bullets every time.'},{i:'🔫',bg:'rgba(34,214,139,0.1)',title:'Burst fire — 2 to 3 bullets at a time',body:'Even rifles spread badly after the first 4 bullets. Shoot 2–3 rounds, pause, let the crosshair shrink, then shoot again. Full spray only inside 5 meters max.'},{i:'📊',bg:'rgba(245,166,35,0.1)',title:edpi<=600?'Your eDPI looks good — keep it':'Your eDPI is too high — lower it',body:edpi<=600?`Your eDPI of ${edpi} is solid. Don't change it every session — give it 2 full weeks. Muscle memory needs consistency to form.`:`Your eDPI of ${edpi} is too fast for precision. Lower in-game sensitivity by 0.05 each week until you reach eDPI 300–550. Accuracy will improve visibly.`},{i:'🏃',bg:'rgba(255,70,85,0.1)',title:'Use the Practice Range every session',body:'Spend 5–10 minutes in Valorant Practice Range before queuing. Shoot bots at medium range. Focus on slow, deliberate aim — not speed. Speed comes naturally with practice.'},{i:'👁️',bg:'rgba(124,92,252,0.1)',title:'Learn angles, not just mechanics',body:'Valorant is 50% game sense. Notice which corners enemies use most on Ascent, Bind, Haven. Pre-aim those spots before you see anyone. You will seem faster without changing anything.'},{i:'💪',bg:'rgba(34,214,139,0.08)',title:'Arm for big flicks, wrist for small corrections',body:'Long flicks = move your whole arm. Tiny adjustments = wrist only. Most beginners only use wrist and overshoot on big flicks. Deliberately practice using your whole forearm.'},{i:'⏰',bg:'rgba(245,166,35,0.08)',title:'Never change settings for 14 days',body:'Switching sensitivity every few days destroys muscle memory before it forms. Commit to your settings for 14 days minimum. It will feel wrong at first — that is normal and necessary.'}];
+  const c=document.getElementById('tips-container');c.innerHTML='';
+  tips.forEach((t,i)=>{const d=document.createElement('div');d.className='tip-card';d.innerHTML=`<div class="tip-icon" style="background:${t.bg}">${t.i}</div><div><div class="tip-num">Tip ${i+1}</div><div class="tip-title">${t.title}</div><div class="tip-body">${t.body}</div></div>`;c.appendChild(d);});
+}
+
+function buildSensGuide(dpi,sens,scope,edpi){
+  document.getElementById('sens-detail').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px"><div style="background:var(--bg3);border-radius:9px;padding:11px 13px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;font-weight:700">DPI</div><div style="font-size:20px;font-weight:800;font-family:var(--mono)">${dpi}</div></div><div style="background:var(--bg3);border-radius:9px;padding:11px 13px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;font-weight:700">Sensitivity</div><div style="font-size:20px;font-weight:800;font-family:var(--mono)">${sens}</div></div><div style="background:var(--bg3);border-radius:9px;padding:11px 13px;border:1px solid rgba(255,70,85,0.2)"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;font-weight:700">eDPI</div><div style="font-size:20px;font-weight:800;font-family:var(--mono);color:var(--red)">${edpi}</div></div><div style="background:var(--bg3);border-radius:9px;padding:11px 13px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;font-weight:700">Scoped eDPI</div><div style="font-size:20px;font-weight:800;font-family:var(--mono)">${Math.round(edpi*parseFloat(scope))}</div></div></div><div style="font-size:12px;color:var(--muted);line-height:1.7;padding:10px 12px;background:var(--bg3);border-radius:8px"><strong style="color:var(--dim)">What is eDPI?</strong> eDPI = DPI × Sensitivity. 400 DPI + 0.80 sens = 800 DPI + 0.40 sens = same eDPI (320). Always compare eDPI, not just sensitivity.</div>`;
+  const ranges=[{name:'Radiant / Pro level',min:160,max:380,color:'#ffe045'},{name:'Immortal / Ascendant',min:200,max:480,color:'#ff4655'},{name:'Diamond / Platinum',min:220,max:560,color:'#b66fff'},{name:'Gold / Silver',min:250,max:650,color:'#ffd700'},{name:'Bronze / Iron / New',min:280,max:800,color:'#8c8c8c'}];
+  const maxV=900;let html='';
+  ranges.forEach(r=>{const pL=(r.min/maxV*100).toFixed(1),pW=((r.max-r.min)/maxV*100).toFixed(1),inR=edpi>=r.min&&edpi<=r.max,mPct=Math.min(edpi/maxV*100,97).toFixed(1);html+=`<div class="range-row"><div class="range-top"><span class="range-name" style="color:${r.color}">${r.name}</span><span class="range-nums">${r.min}–${r.max}</span></div><div class="range-bar"><div class="range-fill" style="left:${pL}%;width:${pW}%;background:${r.color}"></div><div class="range-marker" style="left:${mPct}%;${inR?'display:block':'display:none'}"></div></div></div>`;});
+  document.getElementById('edpi-ranges').innerHTML=html+'<div style="font-size:11px;color:var(--dim);margin-top:8px">Red dot marks your eDPI within each rank range</div>';
+  let rec='';
+  if(edpi<250)rec=`Your eDPI of <strong style="color:var(--red)">${edpi}</strong> is very low. Try <strong style="color:var(--green)">800 DPI + 0.35 sens</strong> (eDPI 280). Use a medium or large mousepad.`;
+  else if(edpi<=600)rec=`Your eDPI of <strong style="color:var(--green)">${edpi}</strong> is solid. <strong>Keep your current settings</strong> for at least 2 weeks and let muscle memory build.`;
+  else if(edpi<=1000)rec=`Your eDPI of <strong style="color:var(--amber)">${edpi}</strong> is slightly high. Lower in-game sensitivity by <strong>0.05 each week</strong> until you reach eDPI 400–550.`;
+  else rec=`Your eDPI of <strong style="color:var(--red)">${edpi}</strong> is too high. Set to <strong style="color:var(--green)">800 DPI + 0.40 sens (eDPI 320)</strong> now and spend one week in the Practice Range recalibrating.`;
+  document.getElementById('sens-rec').innerHTML=`<div style="font-size:13px;line-height:1.8;color:var(--text)">${rec}</div>`;
+}
+onSlider();
+aiUpdateKeyUI();
+
+/* ===== SENSITIVITY CONVERTER ===== */
+let convGame='cs2';
+const CONV_MULT={cs2:3.18,apex:3.18,ow2:0.074};
+const CONV_LABELS={cs2:'Your CS2 sensitivity',apex:'Your Apex Legends sensitivity',ow2:'Your Overwatch 2 sensitivity'};
+const CONV_NOTES={
+  cs2:'CS2 and Valorant share the same underlying yaw ratio — this conversion is accurate. Paste this directly into Valorant Settings → Controls → Mouse Sensitivity.',
+  apex:'Apex uses a Source-engine–derived yaw value identical to CS2, so the ×3.18 multiplier applies here too. Fine-tune by ±0.02 in Practice Range if needed.',
+  ow2:'Overwatch 2 uses a heavily compressed sensitivity scale. This is an approximation — spend 5 minutes in Practice Range and adjust by ±0.05 until your aim feels the same.'
+};
+
+function pickGame(el,game){
+  document.getElementById('game-chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  convGame=game;
+  document.getElementById('sens-input-label').textContent=CONV_LABELS[game];
+  convertSens();
+}
+
+function convertSens(){
+  const raw=parseFloat(document.getElementById('source-sens-inp').value);
+  const dpi=parseInt(document.getElementById('conv-dpi-inp').value)||800;
+  const res=document.getElementById('conv-result');
+  if(isNaN(raw)||raw<=0){res.classList.remove('show');return;}
+  const val=(raw*CONV_MULT[convGame]);
+  const valStr=val<1?val.toFixed(3):val.toFixed(2);
+  const edpi=Math.round(dpi*val);
+  document.getElementById('conv-val').textContent=valStr;
+  document.getElementById('conv-edpi').textContent=`DPI ${dpi}  ×  ${valStr}  =  eDPI ${edpi}`;
+  document.getElementById('conv-note').textContent=CONV_NOTES[convGame];
+  res.classList.add('show');
+}
+
+/* ===== CROSSHAIR BUILDER ===== */
+let xhairColor='green';
+let xhairBg='dark';
+const XHAIR_COLORS={green:'#00ff7f',white:'#ffffff',cyan:'#00eeff',yellow:'#ffee00',red:'#ff4655',blue:'#5599ff',pink:'#ff66cc'};
+const XHAIR_COLOR_CODES={green:1,white:4,cyan:6,yellow:2,red:5,blue:3,pink:7};
+const XHAIR_BGS={dark:'#1a1a22',gray:'#525260',bright:'#c2aa82'};
+
+const XHAIR_PRESETS={
+  TenZ:{color:'cyan',il:1,io:4,it:2,ia:1,dot:false,dotA:1,outline:false},
+  ScreaM:{color:'white',il:3,io:2,it:2,ia:0.8,dot:true,dotA:1,outline:false},
+  yay:{color:'cyan',il:2,io:3,it:2,ia:1,dot:false,dotA:1,outline:false},
+  cNed:{color:'cyan',il:1,io:3,it:1,ia:1,dot:true,dotA:1,outline:false},
+  Dot:{color:'white',il:4,io:4,it:2,ia:0,dot:true,dotA:1,outline:false},
+  Mini:{color:'white',il:2,io:1,it:1,ia:0.8,dot:false,dotA:1,outline:false},
+};
+
+function loadXhairPreset(name){
+  const p=XHAIR_PRESETS[name];if(!p)return;
+  document.getElementById('xhair-color-chips').querySelectorAll('.xhair-color-chip').forEach(c=>c.classList.remove('on'));
+  const chip=document.querySelector(`.xhair-color-chip[onclick*="'${p.color}'"]`);
+  if(chip)chip.classList.add('on');
+  xhairColor=p.color;
+  document.getElementById('xl').value=p.il;
+  document.getElementById('xo').value=p.io;
+  document.getElementById('xt').value=p.it;
+  document.getElementById('xa').value=Math.round(p.ia*10);
+  document.getElementById('xhair-dot').checked=p.dot;
+  document.getElementById('xda').value=Math.round(p.dotA*10);
+  document.getElementById('xhair-outline').checked=p.outline;
+  xhairUpdate();
+}
+
+function setXhairBg(bg,el){
+  xhairBg=bg;
+  document.querySelectorAll('[id^="xbg-"]').forEach(b=>b.classList.remove('on'));
+  if(el)el.classList.add('on');
+  xhairUpdate();
+}
+
+function saveXhairToStorage(){
+  try{localStorage.setItem('vac_xhair',JSON.stringify({color:xhairColor,bg:xhairBg,il:document.getElementById('xl').value,io:document.getElementById('xo').value,it:document.getElementById('xt').value,ia:document.getElementById('xa').value,dot:document.getElementById('xhair-dot').checked,dotA:document.getElementById('xda').value,outline:document.getElementById('xhair-outline').checked}));}catch(e){}
+}
+
+function loadXhairFromStorage(){
+  try{
+    const raw=localStorage.getItem('vac_xhair');if(!raw)return;
+    const d=JSON.parse(raw);
+    document.getElementById('xhair-color-chips').querySelectorAll('.xhair-color-chip').forEach(c=>c.classList.remove('on'));
+    const chip=document.querySelector(`.xhair-color-chip[onclick*="'${d.color}'"]`);
+    if(chip){chip.classList.add('on');xhairColor=d.color;}
+    if(d.bg){xhairBg=d.bg;const bgBtn=document.getElementById('xbg-'+d.bg);document.querySelectorAll('[id^="xbg-"]').forEach(b=>b.classList.remove('on'));if(bgBtn)bgBtn.classList.add('on');}
+    document.getElementById('xl').value=d.il;document.getElementById('xo').value=d.io;
+    document.getElementById('xt').value=d.it;document.getElementById('xa').value=d.ia;
+    document.getElementById('xhair-dot').checked=d.dot;document.getElementById('xda').value=d.dotA;
+    document.getElementById('xhair-outline').checked=d.outline;
+  }catch(e){}
+}
+
+function xhairPickColor(el,color){
+  document.getElementById('xhair-color-chips').querySelectorAll('.xhair-color-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  xhairColor=color;
+  xhairUpdate();
+}
+
+function xhairUpdate(){
+  const il=parseInt(document.getElementById('xl').value);
+  const io=parseInt(document.getElementById('xo').value);
+  const it=parseInt(document.getElementById('xt').value);
+  const ia=parseInt(document.getElementById('xa').value)/10;
+  const showDot=document.getElementById('xhair-dot').checked;
+  const dotOpacity=parseInt(document.getElementById('xda').value)/10;
+  const outline=document.getElementById('xhair-outline').checked;
+  document.getElementById('xl-lbl').textContent=il;
+  document.getElementById('xo-lbl').textContent=io;
+  document.getElementById('xt-lbl').textContent=it;
+  document.getElementById('xa-lbl').textContent=ia.toFixed(1);
+  document.getElementById('xda-lbl').textContent=dotOpacity.toFixed(1);
+  document.getElementById('dot-opacity-row').style.display=showDot?'block':'none';
+  drawXhairCanvas(il,io,it,ia,showDot,dotOpacity,outline);
+  document.getElementById('xhair-code').textContent=buildXhairCode(il,io,it,ia,showDot,dotOpacity,outline);
+  document.getElementById('copy-btn').textContent='📋 Copy code';
+  document.getElementById('copy-btn').classList.remove('copied');
+  saveXhairToStorage();
+}
+
+function buildXhairCode(il,io,it,ia,showDot,dotOpacity,outline){
+  const c=XHAIR_COLOR_CODES[xhairColor]||1;
+  const dot=showDot?1:0;
+  let code=`0;P;c;${c};h;${dot}`;
+  if(showDot)code+=`;d;${dotOpacity.toFixed(1)}`;
+  if(outline)code+=`;z;0.8;t;1`;
+  code+=`;0l;${il};0o;${io};0a;${ia.toFixed(1)};0t;${it};0f;0;1b;0`;
+  return code;
+}
+
+function drawXhairCanvas(il,io,it,ia,showDot,dotOpacity,outline){
+  const canvas=document.getElementById('xhair-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle=XHAIR_BGS[xhairBg]||'#1a1a22';ctx.fillRect(0,0,w,h);
+  /* subtle grid */
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  for(let x=0;x<w;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  /* center dot guide */
+  ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();
+
+  const S=8; /* scale factor */
+  const col=XHAIR_COLORS[xhairColor]||'#00ff7f';
+  const ILpx=il*S,IOpx=io*S,ITpx=it*S;
+
+  function drawLine(x,y,ww,hh){
+    if(outline){
+      ctx.globalAlpha=ia;ctx.fillStyle='#000000';
+      ctx.fillRect(x-1,y-1,ww+2,hh+2);
+    }
+    ctx.globalAlpha=ia;ctx.fillStyle=col;
+    ctx.fillRect(x,y,ww,hh);
+  }
+  /* top */drawLine(cx-ITpx/2,cy-IOpx-ILpx,ITpx,ILpx);
+  /* bottom */drawLine(cx-ITpx/2,cy+IOpx,ITpx,ILpx);
+  /* left */drawLine(cx-IOpx-ILpx,cy-ITpx/2,ILpx,ITpx);
+  /* right */drawLine(cx+IOpx,cy-ITpx/2,ILpx,ITpx);
+  if(showDot){ctx.globalAlpha=dotOpacity;ctx.fillStyle=col;const ds=Math.max(4,ITpx);ctx.fillRect(cx-ds/2,cy-ds/2,ds,ds);}
+  ctx.globalAlpha=1;
+}
+
+function copyXhairCode(){
+  const code=document.getElementById('xhair-code').textContent;
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn=document.getElementById('copy-btn');
+    btn.textContent='✓ Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 Copy code';btn.classList.remove('copied');},2000);
+  });
+}
+
+/* ===== TARGET TRAINER ===== */
+const DIFFS={easy:{r:44,label:'Easy'},medium:{r:28,label:'Medium'},hard:{r:16,label:'Hard'}};
+let tr={active:false,diff:'medium',hits:0,total:0,shots:0,txRemain:20,tx:0,ty:0,shotTime:0,reactionTimes:[],flashFrames:0,flashHit:false,animId:null};
+
+function setDiff(el,d){
+  document.getElementById('diff-chips').querySelectorAll('.diff-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');tr.diff=d;
+  if(!tr.active)initTrainerCanvas();
+}
+
+function initTrainerCanvas(){
+  const canvas=document.getElementById('trainer-canvas');
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='rgba(255,255,255,0.12)';ctx.font='bold 16px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Click Start to begin',canvas.width/2,canvas.height/2);
+  ctx.textAlign='left';
+}
+
+function startTrainer(){
+  document.getElementById('trainer-results').classList.remove('show');
+  tr={...tr,active:true,hits:0,total:0,shots:0,txRemain:20,reactionTimes:[],flashFrames:0,flashHit:false};
+  updateHUD();
+  spawnTarget();
+  document.getElementById('trainer-start-btn').textContent='⟳ Restart';
+  document.getElementById('trainer-start-btn').onclick=restartTrainer;
+}
+
+function restartTrainer(){
+  stopTrainer();
+  document.getElementById('trainer-results').classList.remove('show');
+  startTrainer();
+}
+
+function stopTrainer(){
+  tr.active=false;
+  if(tr.animId){cancelAnimationFrame(tr.animId);tr.animId=null;}
+}
+
+function spawnTarget(){
+  if(!tr.active)return;
+  const canvas=document.getElementById('trainer-canvas');
+  const r=DIFFS[tr.diff].r;
+  const pad=r+4;
+  tr.tx=pad+Math.random()*(canvas.width-2*pad);
+  tr.ty=pad+Math.random()*(canvas.height-2*pad);
+  tr.shotTime=performance.now();
+  tr.flashFrames=0;
+  drawTrainer();
+}
+
+function drawTrainer(flashOverride){
+  const canvas=document.getElementById('trainer-canvas');
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width,h=canvas.height;
+  const r=DIFFS[tr.diff].r;
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,w,h);
+  /* grid */
+  ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  if(!tr.active)return;
+  /* flash overlay */
+  if(tr.flashFrames>0){
+    ctx.fillStyle=tr.flashHit?'rgba(34,214,139,0.12)':'rgba(255,70,85,0.12)';
+    ctx.fillRect(0,0,w,h);
+    tr.flashFrames--;
+    if(tr.flashFrames>0){tr.animId=requestAnimationFrame(()=>drawTrainer());return;}
+  }
+  /* target */
+  ctx.beginPath();ctx.arc(tr.tx,tr.ty,r,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,70,85,0.18)';ctx.fill();
+  ctx.strokeStyle='#ff4655';ctx.lineWidth=2;ctx.stroke();
+  /* inner ring */
+  ctx.beginPath();ctx.arc(tr.tx,tr.ty,r*0.35,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,70,85,0.6)';ctx.lineWidth=1.5;ctx.stroke();
+  /* center dot */
+  ctx.beginPath();ctx.arc(tr.tx,tr.ty,4,0,Math.PI*2);
+  ctx.fillStyle='#ff4655';ctx.fill();
+}
+
+function handleTrainerClick(x,y){
+  if(!tr.active)return;
+  tr.total++;
+  const r=DIFFS[tr.diff].r;
+  const dx=x-tr.tx,dy=y-tr.ty,dist=Math.sqrt(dx*dx+dy*dy);
+  const hit=dist<=r;
+  if(hit){
+    tr.hits++;tr.txRemain--;
+    tr.reactionTimes.push(performance.now()-tr.shotTime);
+    tr.flashHit=true;
+  }else{
+    tr.flashHit=false;
+  }
+  tr.flashFrames=5;
+  updateHUD();
+  if(tr.txRemain<=0){setTimeout(endTrainer,250);return;}
+  if(hit)spawnTarget();
+  else drawTrainer();
+}
+
+function updateHUD(){
+  const acc=tr.total>0?Math.round(tr.hits/tr.total*100):0;
+  const avgRt=tr.reactionTimes.length>0?Math.round(tr.reactionTimes.reduce((a,b)=>a+b,0)/tr.reactionTimes.length):0;
+  document.getElementById('tr-hits').textContent=tr.hits||'–';
+  document.getElementById('tr-acc').textContent=tr.total>0?acc+'%':'–';
+  document.getElementById('tr-rt').textContent=avgRt>0?avgRt:'–';
+  document.getElementById('tr-remain').textContent=tr.txRemain;
+}
+
+function endTrainer(){
+  tr.active=false;
+  const acc=Math.round(tr.hits/tr.total*100);
+  const avgRt=tr.reactionTimes.length>0?Math.round(tr.reactionTimes.reduce((a,b)=>a+b,0)/tr.reactionTimes.length):0;
+  const bestRt=tr.reactionTimes.length>0?Math.round(Math.min(...tr.reactionTimes)):0;
+  const grades=[{min:90,g:'S',msg:'Elite reflexes. This is pro-level accuracy.'},{min:75,g:'A',msg:'Great accuracy. Your clicks are clean and deliberate.'},{min:60,g:'B',msg:'Solid foundation. Keep drilling to tighten consistency.'},{min:40,g:'C',msg:'Room to improve. Focus on slowing down and clicking center.'},{min:0,g:'D',msg:'Keep going — every session builds the muscle memory.'}];
+  const grade=grades.find(g=>acc>=g.min)||grades[grades.length-1];
+  document.getElementById('res-score').textContent=`${tr.hits}/20`;
+  document.getElementById('res-grade').textContent=`Grade ${grade.g}`;
+  document.getElementById('res-sub-text').textContent=grade.msg;
+  document.getElementById('res-acc').textContent=acc+'%';
+  document.getElementById('res-rt').textContent=avgRt?avgRt+'ms':'–';
+  document.getElementById('res-best').textContent=bestRt?bestRt+'ms':'–';
+  document.getElementById('trainer-results').classList.add('show');
+  document.getElementById('trainer-start-btn').textContent='▶ Start';
+  document.getElementById('trainer-start-btn').onclick=startTrainer;
+  const canvas=document.getElementById('trainer-canvas');
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+/* Trainer canvas click handler */
+document.getElementById('trainer-canvas').addEventListener('click',function(e){
+  if(!tr.active)return;
+  const rect=this.getBoundingClientRect();
+  const scaleX=this.width/rect.width,scaleY=this.height/rect.height;
+  handleTrainerClick((e.clientX-rect.left)*scaleX,(e.clientY-rect.top)*scaleY);
+});
+
+/* ===== SENSITIVITY CALIBRATION GAME ===== */
+const SG_FLICK=10,SG_PREC=10,SG_TOTAL_SHOTS=20;
+let sg={active:false,phase:1,shots:0,hits:0,misses:0,txRemain:SG_TOTAL_SHOTS,tx:0,ty:0,prevTx:0,prevTy:0,shotTime:0,reactionTimes:[],overshootCount:0,undershootCount:0,closeMisses:0,farMisses:0,flickHits:0,flickShots:0,precHits:0,precShots:0,flashFrames:0,flashHit:false,missX:-1,missY:-1,dotStates:[]};
+
+function getSGEdpi(){return parseInt(document.getElementById('sg-edpi').value)||320;}
+function getSGRadius(){return sg.phase===1?34:20;}
+
+function initSGCanvas(){
+  sg.active=false;
+  buildSGDots();
+  document.getElementById('sg-phase-wrap').style.visibility='hidden';
+  const canvas=document.getElementById('sg-canvas'),ctx=canvas.getContext('2d');
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='rgba(255,255,255,0.13)';ctx.font='bold 15px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('Set your eDPI above, then press Start',canvas.width/2,canvas.height/2-12);
+  ctx.fillStyle='rgba(255,255,255,0.06)';ctx.font='13px Inter,sans-serif';
+  ctx.fillText('Phase 1: flick anywhere  ·  Phase 2: precision zone near center',canvas.width/2,canvas.height/2+16);
+  ctx.textAlign='left';
+}
+
+function buildSGDots(){
+  sg.dotStates=new Array(SG_TOTAL_SHOTS).fill('pending');
+  const bar=document.getElementById('sg-prog');bar.innerHTML='';
+  for(let i=0;i<SG_TOTAL_SHOTS;i++){
+    const d=document.createElement('div');d.className='sg-dot';d.id='sg-dot-'+i;
+    if(i===SG_FLICK-1)d.style.marginRight='10px';
+    bar.appendChild(d);
+  }
+}
+
+function setSGDot(idx,state){const d=document.getElementById('sg-dot-'+idx);if(d){d.className='sg-dot '+state;}}
+
+function startSG(){
+  document.getElementById('sg-verdict').classList.remove('show');
+  sg={active:true,phase:1,shots:0,hits:0,misses:0,txRemain:SG_TOTAL_SHOTS,tx:0,ty:0,prevTx:0,prevTy:0,shotTime:0,reactionTimes:[],overshootCount:0,undershootCount:0,closeMisses:0,farMisses:0,flickHits:0,flickShots:0,precHits:0,precShots:0,flashFrames:0,flashHit:false,missX:-1,missY:-1,dotStates:[]};
+  buildSGDots();
+  sgUpdatePhaseLabel();sgUpdateHud();
+  document.getElementById('sg-start-btn').style.display='none';
+  spawnSGTarget();
+}
+
+function sgUpdatePhaseLabel(){
+  const badge=document.getElementById('sg-phase-badge'),wrap=document.getElementById('sg-phase-wrap');
+  wrap.style.visibility='visible';
+  if(sg.phase===1){badge.style.cssText='background:rgba(255,70,85,0.15);color:#ff6b77;border:1px solid rgba(255,70,85,0.3)';badge.innerHTML='&#9889; Phase 1 — Flick Shots (10)';}
+  else{badge.style.cssText='background:rgba(124,92,252,0.15);color:#a48dfd;border:1px solid rgba(124,92,252,0.3)';badge.innerHTML='&#127919; Phase 2 — Precision Shots (10)';}
+}
+
+function spawnSGTarget(){
+  const canvas=document.getElementById('sg-canvas'),w=canvas.width,h=canvas.height,r=getSGRadius();
+  const edpi=getSGEdpi();
+  let nx,ny,attempts=0;
+  const minDist=sg.phase===1?Math.min(w,h)*Math.max(0.28,Math.min(0.55,250/edpi)):0;
+  do{
+    if(sg.phase===1){nx=r+4+Math.random()*(w-2*r-8);ny=r+4+Math.random()*(h-2*r-8);}
+    else{const zw=w*0.52,zh=h*0.52;nx=(w-zw)/2+r+Math.random()*(zw-2*r);ny=(h-zh)/2+r+Math.random()*(zh-2*r);}
+    attempts++;
+  }while(attempts<30&&sg.shots>0&&sg.phase===1&&Math.sqrt((nx-sg.tx)**2+(ny-sg.ty)**2)<minDist);
+  sg.prevTx=sg.tx;sg.prevTy=sg.ty;sg.tx=nx;sg.ty=ny;sg.shotTime=performance.now();sg.flashFrames=0;sg.missX=-1;
+  if(sg.shots<SG_TOTAL_SHOTS)setSGDot(sg.shots,'cur');
+  drawSGCanvas();
+}
+
+function drawSGCanvas(){
+  const canvas=document.getElementById('sg-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  if(!sg.active)return;
+  if(sg.phase===2){const zw=w*0.52,zh=h*0.52;ctx.fillStyle='rgba(124,92,252,0.06)';ctx.beginPath();ctx.roundRect((w-zw)/2,(h-zh)/2,zw,zh,12);ctx.fill();ctx.strokeStyle='rgba(124,92,252,0.14)';ctx.lineWidth=1;ctx.stroke();}
+  if(sg.flashFrames>0){ctx.fillStyle=sg.flashHit?'rgba(34,214,139,0.13)':'rgba(255,70,85,0.1)';ctx.fillRect(0,0,w,h);sg.flashFrames--;if(sg.flashFrames>0){requestAnimationFrame(drawSGCanvas);return;}}
+  if(sg.missX>=0){ctx.beginPath();ctx.arc(sg.missX,sg.missY,6,0,Math.PI*2);ctx.fillStyle='rgba(255,70,85,0.5)';ctx.fill();ctx.strokeStyle='#ff4655';ctx.lineWidth=1.5;ctx.stroke();/* X mark */ctx.strokeStyle='rgba(255,70,85,0.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(sg.missX-4,sg.missY-4);ctx.lineTo(sg.missX+4,sg.missY+4);ctx.moveTo(sg.missX+4,sg.missY-4);ctx.lineTo(sg.missX-4,sg.missY+4);ctx.stroke();}
+  const col=sg.phase===1?'#ff4655':'#a48dfd',bgc=sg.phase===1?'rgba(255,70,85,0.16)':'rgba(124,92,252,0.16)';
+  const grd=ctx.createRadialGradient(sg.tx,sg.ty,getSGRadius()*0.4,sg.tx,sg.ty,getSGRadius()*1.8);
+  grd.addColorStop(0,sg.phase===1?'rgba(255,70,85,0.12)':'rgba(124,92,252,0.12)');grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;ctx.beginPath();ctx.arc(sg.tx,sg.ty,getSGRadius()*1.8,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(sg.tx,sg.ty,getSGRadius(),0,Math.PI*2);ctx.fillStyle=bgc;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(sg.tx,sg.ty,getSGRadius()*0.38,0,Math.PI*2);ctx.strokeStyle=col+'80';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.beginPath();ctx.arc(sg.tx,sg.ty,5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+}
+
+function handleSGClick(x,y){
+  if(!sg.active)return;
+  const r=getSGRadius(),dx=x-sg.tx,dy=y-sg.ty,dist=Math.sqrt(dx*dx+dy*dy),hit=dist<=r,idx=sg.shots;
+  if(sg.phase===1){sg.flickShots++;if(hit)sg.flickHits++;}else{sg.precShots++;if(hit)sg.precHits++;}
+  if(hit){sg.hits++;sg.reactionTimes.push(performance.now()-sg.shotTime);sg.flashHit=true;setSGDot(idx,'hit');}
+  else{
+    sg.misses++;sg.flashHit=false;sg.missX=x;sg.missY=y;setSGDot(idx,'miss');
+    const closeThresh=r*2.5;
+    if(dist<=closeThresh){
+      sg.closeMisses++;
+      if(sg.prevTx!==0||sg.prevTy!==0){const vx=sg.tx-sg.prevTx,vy=sg.ty-sg.prevTy,len=Math.sqrt(vx*vx+vy*vy);if(len>20){const dot=(dx*vx+dy*vy)/len;if(dot>0)sg.overshootCount++;else sg.undershootCount++;}}
+    }else{sg.farMisses++;}
+  }
+  sg.shots++;sg.txRemain--;sg.flashFrames=5;
+  if(sg.shots===SG_FLICK&&sg.phase===1){sg.phase=2;sgUpdatePhaseLabel();}
+  sgUpdateHud();
+  if(sg.txRemain<=0){setTimeout(endSGGame,320);return;}
+  if(hit)spawnSGTarget();else{drawSGCanvas();setTimeout(()=>{if(sg.active)spawnSGTarget();},420);}
+}
+
+function sgUpdateHud(){
+  const acc=sg.shots>0?Math.round(sg.hits/sg.shots*100):0;
+  document.getElementById('sg-hits').textContent=sg.hits||'–';
+  document.getElementById('sg-acc').textContent=sg.shots>0?acc+'%':'–';
+  document.getElementById('sg-over').textContent=sg.overshootCount>0?sg.overshootCount:'–';
+  document.getElementById('sg-remain').textContent=sg.txRemain;
+}
+
+function sgDpiTable(targetEdpi){
+  const dpis=[400,800,1600];
+  return dpis.map(d=>{const s=(targetEdpi/d);const sf=s<1?s.toFixed(3):s.toFixed(2);return `  ${d} DPI  →  in-game sens ${sf}`;}).join('\n');
+}
+
+function endSGGame(){
+  sg.active=false;
+  const totalAcc=Math.round(sg.hits/sg.shots*100);
+  const flickAcc=sg.flickShots>0?Math.round(sg.flickHits/sg.flickShots*100):0;
+  const precAcc=sg.precShots>0?Math.round(sg.precHits/sg.precShots*100):0;
+  const avgRt=sg.reactionTimes.length>0?Math.round(sg.reactionTimes.reduce((a,b)=>a+b,0)/sg.reactionTimes.length):0;
+  const edpi=getSGEdpi();
+
+  /* Mechanics score — % of shots that were a hit or a close miss (within 2.5× radius) */
+  const mechScore=Math.round((sg.hits+sg.closeMisses)/sg.shots*100);
+
+  /* Sensitivity analysis — only on close misses (far misses are mechanics errors, not sens errors) */
+  const sensTotal=sg.closeMisses;
+  const overRatio=sensTotal>0?sg.overshootCount/sensTotal:0.5;
+
+  let vt,vc,va,bd;
+
+  if(mechScore<35){
+    /* Aim still too raw — no sens verdict is reliable */
+    vt='Aim mechanics still developing';vc='#68687e';
+    va=`Mechanics score: ${mechScore}% — ${sg.farMisses} of your ${sg.misses} misses were far from the target, which means the mouse is still moving unpredictably. Sensitivity can't be diagnosed yet.`;
+    bd=`What to do next:\n1. Stick with eDPI 320 — it's the safest starting point for Valorant.\n2. Play Range (Shooting Range in-game) for 15 min every day for 2 weeks.\n3. Come back and re-test once your mechanics score is above 45%.\n\nRecommended starting settings:\n${sgDpiTable(320)}`;
+  }else{
+    /* Enough mechanics control to read the sensitivity signal */
+    const confidence=mechScore>=55?'':'(low confidence — keep practising to sharpen this reading)';
+    if(sg.hits>=18){
+      vt='Sensitivity perfectly calibrated';vc='#22d68b';
+      va=`${totalAcc}% accuracy with only ${sg.misses} miss${sg.misses!==1?'es':''}. This is elite-level data — your eDPI ${edpi} is dialled in.`;
+      bd=`Flick: ${flickAcc}%  ·  Precision: ${precAcc}%  ·  Mechanics: ${mechScore}%\nYour current settings:\n${sgDpiTable(edpi)}\nFocus on crosshair placement and game sense — sensitivity is not the bottleneck.`;
+    }else if(overRatio>0.62&&sensTotal>=3){
+      vt='Sensitivity too HIGH';vc='#ff4655';
+      const rec=Math.round(edpi*0.87);
+      va=`${sg.overshootCount} of ${sensTotal} close misses were overshoots (${Math.round(overRatio*100)}%) ${confidence}. Your cursor consistently flew past the target.`;
+      bd=`Flick: ${flickAcc}%  ·  Precision: ${precAcc}%  ·  Mechanics: ${mechScore}%\nSuggested target eDPI: ${rec}\n${sgDpiTable(rec)}\nLower your in-game sensitivity by ~0.05 steps. Stick with the new value for at least 14 days before judging again.`;
+    }else if(overRatio<0.35&&sensTotal>=3){
+      vt='Sensitivity too LOW';vc='#f5a623';
+      const rec=Math.round(edpi*1.1);
+      va=`${sg.undershootCount} of ${sensTotal} close misses were undershoots (${Math.round((1-overRatio)*100)}%) ${confidence}. Your cursor stopped short before reaching the target.`;
+      bd=`Flick: ${flickAcc}%  ·  Precision: ${precAcc}%  ·  Mechanics: ${mechScore}%\nSuggested target eDPI: ${rec}\n${sgDpiTable(rec)}\nRaise your in-game sensitivity by ~0.03 steps. Only change if this pattern repeats across 3+ sessions.`;
+    }else{
+      vt='Sensitivity well calibrated';vc='#a48dfd';
+      va=`Balanced overshoot/undershoot (${sg.overshootCount}/${sg.undershootCount}) at eDPI ${edpi} ${confidence}. Sensitivity is not the bottleneck.`;
+      bd=`Flick: ${flickAcc}%  ·  Precision: ${precAcc}%  ·  Mechanics: ${mechScore}%\nYour current settings:\n${sgDpiTable(edpi)}\nWork on crosshair placement and pre-aiming corners — that will gain you more than any sensitivity tweak.`;
+    }
+    /* Secondary flick vs precision note */
+    if(flickAcc-precAcc>22)bd+='\n\nFlick > Precision by '+Math.abs(flickAcc-precAcc)+'%: try lowering sensitivity slightly to improve micro-corrections.';
+    else if(precAcc-flickAcc>22)bd+='\n\nPrecision > Flick by '+Math.abs(precAcc-flickAcc)+'%: try a small sensitivity increase so you reach distant targets faster.';
+  }
+
+  document.getElementById('sg-vt').textContent=vt;document.getElementById('sg-vt').style.color=vc;
+  document.getElementById('sg-va').textContent=va;
+  document.getElementById('sg-r-total').textContent=sg.hits+'/20';
+  document.getElementById('sg-r-flick').textContent=flickAcc+'%';
+  document.getElementById('sg-r-prec').textContent=precAcc+'%';
+  document.getElementById('sg-r-rt').textContent=mechScore+'%';
+  document.querySelector('#sg-verdict .sg-stat-grid').children[3].querySelector('.hud-lbl').textContent='Mechanics';
+  document.getElementById('sg-breakdown').textContent=bd;
+  document.getElementById('sg-verdict').classList.add('show');
+  document.getElementById('sg-start-btn').style.display='inline-flex';
+  const ctx=document.getElementById('sg-canvas').getContext('2d');
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,720,380);
+}
+
+document.getElementById('sg-canvas').addEventListener('click',function(e){
+  if(!sg.active)return;
+  const rect=this.getBoundingClientRect(),sx=this.width/rect.width,sy=this.height/rect.height;
+  handleSGClick((e.clientX-rect.left)*sx,(e.clientY-rect.top)*sy);
+});
+</script>
+</body>
+</html>
