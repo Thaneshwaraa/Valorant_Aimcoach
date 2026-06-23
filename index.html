@@ -217,6 +217,62 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
 .sg-verdict-box.show{display:block;animation:fadeUp 0.35s ease;}
 .sg-verdict-title{font-size:19px;font-weight:800;letter-spacing:-0.02em;margin-bottom:6px;}
 .sg-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
+/* Sensitivity Finder */
+#sf-canvas{display:block;width:100%;border-radius:var(--rl);cursor:none;border:1px solid var(--border);background:#0b0b0e;}
+.sf-canvas-wrap{position:relative;border-radius:var(--rl);overflow:hidden;}
+.sf-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;background:rgba(8,8,11,0.72);backdrop-filter:blur(3px);cursor:pointer;transition:opacity 0.2s;z-index:2;padding:1rem;}
+.sf-overlay.hide{opacity:0;pointer-events:none;}
+.sf-ov-icon{font-size:34px;}
+.sf-ov-title{font-size:17px;font-weight:800;letter-spacing:-0.02em;}
+.sf-ov-sub{font-size:12.5px;color:var(--muted);max-width:380px;line-height:1.6;}
+.sf-ov-kbd{font-family:var(--mono);font-size:11px;background:var(--bg3);border:1px solid var(--bord2);border-radius:6px;padding:2px 7px;color:var(--text);}
+.sf-phasebar{display:flex;gap:6px;margin-bottom:12px;}
+.sf-pseg{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:9px 10px;text-align:center;transition:border-color 0.3s,background 0.3s;}
+.sf-pseg.cur{border-color:var(--red);background:rgba(255,70,85,0.06);box-shadow:0 0 14px rgba(255,70,85,0.12);}
+.sf-pseg.done{border-color:rgba(34,214,139,0.4);background:rgba(34,214,139,0.05);}
+.sf-pseg-n{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+.sf-pseg.cur .sf-pseg-n{color:var(--red2);}
+.sf-pseg.done .sf-pseg-n{color:var(--green);}
+.sf-pseg-v{font-size:15px;font-weight:800;font-family:var(--mono);color:var(--text);margin-top:2px;}
+.sf-roundbadge{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:5px 13px;border-radius:99px;margin-bottom:10px;background:rgba(124,92,252,0.14);color:var(--purp2);border:1px solid rgba(124,92,252,0.32);}
+.sf-results{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rxl);padding:1.5rem 1.6rem;margin-top:14px;display:none;}
+.sf-results.show{display:block;animation:fadeUp 0.4s ease;}
+.sf-final{display:flex;align-items:center;gap:18px;padding-bottom:1.1rem;margin-bottom:1.1rem;border-bottom:1px solid var(--border);}
+.sf-final-big{font-size:52px;font-weight:800;font-family:var(--mono);color:var(--green);line-height:1;min-width:120px;}
+.sf-final-lbl{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.sf-final-sub{font-size:12.5px;color:var(--muted);line-height:1.6;}
+.sf-conf{display:inline-block;font-size:11px;font-weight:700;padding:3px 11px;border-radius:99px;margin-top:7px;}
+.sf-bars{margin:4px 0 2px;}
+.sf-barrow{margin-bottom:13px;}
+.sf-barrow:last-child{margin-bottom:0;}
+.sf-bartop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.sf-barname{font-size:12px;font-weight:600;color:var(--text);}
+.sf-baredpi{font-size:11px;font-family:var(--mono);color:var(--muted);}
+.sf-bartrack{height:9px;background:var(--bg3);border-radius:5px;overflow:hidden;position:relative;}
+.sf-barfill{height:100%;border-radius:5px;width:0;transition:width 0.9s cubic-bezier(0.22,1,0.36,1);}
+.sf-barpct{font-size:11px;font-family:var(--mono);color:var(--muted);min-width:34px;text-align:right;}
+.sf-biasmeter{height:36px;background:var(--bg3);border-radius:8px;position:relative;margin:6px 0 16px;overflow:hidden;}
+.sf-biasmid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--bord3);}
+.sf-biaspin{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(0,0,0,0.5);transition:left 0.9s cubic-bezier(0.22,1,0.36,1);}
+.sf-biaslbl{position:absolute;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--dim);}
+.sf-dpirow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;}
+.sf-dpicard{flex:1;min-width:130px;background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--r);padding:11px 13px;}
+.sf-dpicard-d{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;}
+.sf-dpicard-s{font-size:20px;font-weight:800;font-family:var(--mono);color:var(--text);margin-top:2px;}
+.sf-saved-tag{display:none;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--green);margin-top:12px;}
+.sf-saved-tag.show{display:inline-flex;}
+/* 3D aim range */
+#aim3d-canvas{display:block;width:100%;border-radius:var(--rl);border:1px solid var(--border);background:#07070b;cursor:none;}
+.a3-inrow{display:flex;gap:12px;}
+.a3-explain{margin-top:14px;background:var(--bg3);border:1px solid var(--bord2);border-radius:var(--rl);padding:14px 16px;}
+.a3-eq{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:11px;}
+.a3-eqcell{text-align:center;min-width:64px;}
+.a3-eqv{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text);line-height:1.1;}
+.a3-eqv-out{color:var(--green);}
+.a3-eqk{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.a3-eqop{font-size:20px;font-weight:700;color:var(--dim);}
+.a3-explain-txt{font-size:12px;color:var(--muted);line-height:1.65;}
+.a3-explain-txt strong{color:var(--text);font-weight:700;}
 @media(max-width:600px){
   main{padding:1.25rem 1rem 5rem;}header{padding:0 1rem;}
   .prog-wrap{padding:1rem 1rem 0;}.rank-grid{grid-template-columns:repeat(3,1fr);}
@@ -269,6 +325,16 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
       <div class="tc-icon">&#127918;</div>
       <div class="tc-name">Sens Game</div>
       <div class="tc-desc">Shoot &amp; get a verdict on your eDPI calibration</div>
+    </div>
+    <div class="tool-card" style="border-color:rgba(124,92,252,0.28);background:rgba(124,92,252,0.05)" onclick="showTool('sf')">
+      <div class="tc-icon">&#129518;</div>
+      <div class="tc-name">Sensitivity Finder</div>
+      <div class="tc-desc">3-phase test that solves for your perfect Valorant sens</div>
+    </div>
+    <div class="tool-card" style="border-color:rgba(34,214,139,0.26);background:rgba(34,214,139,0.05)" onclick="showTool('aim3d')">
+      <div class="tc-icon">&#129523;</div>
+      <div class="tc-name">3D Aim Range</div>
+      <div class="tc-desc">Real first-person flicks in 3D &mdash; finds your true sens</div>
     </div>
   </div>
 </div>
@@ -691,6 +757,178 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
 </div>
 </div>
 
+<!-- ===== SENSITIVITY FINDER ===== -->
+<div id="sf-tool" style="display:none">
+<div class="tool-wrap">
+  <div class="step-hd">
+    <div class="step-eyebrow">Aimlabs-style</div>
+    <h2 class="step-title">Sensitivity <span>Finder</span></h2>
+    <p class="step-sub">A 3-phase test that genuinely changes your sensitivity each phase (low &rarr; high &rarr; calculated), measures your flicking, tracking &amp; precision, then solves for the sens where you stop overshooting <em>and</em> undershooting.</p>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="clabel">Your mouse DPI (so we can give you an in-game sens)</div>
+    <input class="num-inp" id="sf-dpi" type="number" min="100" max="8000" value="800" placeholder="e.g. 800" style="font-size:28px">
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;align-items:center">
+      <span style="font-size:11px;color:var(--dim)">Common:</span>
+      <button class="diff-chip" onclick="document.getElementById('sf-dpi').value=400" style="font-size:11px;padding:4px 13px">400</button>
+      <button class="diff-chip" onclick="document.getElementById('sf-dpi').value=800" style="font-size:11px;padding:4px 13px">800</button>
+      <button class="diff-chip" onclick="document.getElementById('sf-dpi').value=1600" style="font-size:11px;padding:4px 13px">1600</button>
+    </div>
+    <div class="slider-hint" style="margin-top:10px">&#128161; Uses your mouse via <strong>pointer lock</strong> so each phase truly feels faster/slower. Move to aim, click to shoot, press <span class="sf-ov-kbd">Esc</span> to pause.</div>
+  </div>
+
+  <div class="sf-phasebar" id="sf-phasebar">
+    <div class="sf-pseg" id="sf-pseg-0"><div class="sf-pseg-n">Phase 1 · Low</div><div class="sf-pseg-v" id="sf-pv-0">200</div></div>
+    <div class="sf-pseg" id="sf-pseg-1"><div class="sf-pseg-n">Phase 2 · High</div><div class="sf-pseg-v" id="sf-pv-1">520</div></div>
+    <div class="sf-pseg" id="sf-pseg-2"><div class="sf-pseg-n">Phase 3 · Calc</div><div class="sf-pseg-v" id="sf-pv-2">?</div></div>
+  </div>
+
+  <div class="trainer-hud">
+    <div class="hud-stat"><div class="hud-val" id="sf-hud-flick">&ndash;</div><div class="hud-lbl">Flick acc</div></div>
+    <div class="hud-stat"><div class="hud-val" id="sf-hud-track">&ndash;</div><div class="hud-lbl">Track on-tgt</div></div>
+    <div class="hud-stat"><div class="hud-val" id="sf-hud-prec">&ndash;</div><div class="hud-lbl">Precision</div></div>
+    <div class="hud-stat"><div class="hud-val" id="sf-hud-ttk">&ndash;</div><div class="hud-lbl">Avg TTK</div></div>
+  </div>
+
+  <div style="min-height:28px"><span class="sf-roundbadge" id="sf-roundbadge" style="visibility:hidden">&#9889; Flick</span></div>
+
+  <div class="sf-canvas-wrap">
+    <canvas id="sf-canvas" width="720" height="380"></canvas>
+    <div class="sf-overlay" id="sf-overlay">
+      <div class="sf-ov-icon" id="sf-ov-icon">&#129518;</div>
+      <div class="sf-ov-title" id="sf-ov-title">Find your perfect sensitivity</div>
+      <div class="sf-ov-sub" id="sf-ov-sub">3 phases &middot; flick, track &amp; precision in each. Click below to lock your mouse and begin. Aim naturally &mdash; don't try to "correct" for the sens, just play.</div>
+      <button class="nbtn primary" id="sf-ov-btn" style="flex:unset;width:auto;padding:11px 26px;margin-top:6px" onclick="sfOverlayAction()">&#9654; Start test</button>
+    </div>
+  </div>
+
+  <div class="sf-results" id="sf-results">
+    <div class="sf-final">
+      <div class="sf-final-big" id="sf-final-sens">0.00</div>
+      <div>
+        <div class="sf-final-lbl">Your perfect Valorant sensitivity</div>
+        <div class="sf-final-sub" id="sf-final-sub"></div>
+        <span class="sf-conf" id="sf-conf"></span>
+      </div>
+    </div>
+
+    <div class="clabel" style="margin-bottom:8px">Overshoot &harr; Undershoot balance</div>
+    <div class="sf-biasmeter">
+      <div class="sf-biaslbl" style="left:10px">&larr; Undershoot</div>
+      <div class="sf-biaslbl" style="right:10px">Overshoot &rarr;</div>
+      <div class="sf-biasmid"></div>
+      <div class="sf-biaspin" id="sf-biaspin" style="left:50%;background:var(--green)"></div>
+    </div>
+
+    <div class="clabel" style="margin-bottom:10px">How each phase scored</div>
+    <div class="sf-bars" id="sf-bars"></div>
+
+    <div class="clabel" style="margin:18px 0 8px">Set this in Valorant</div>
+    <div class="sf-dpirow" id="sf-dpirow"></div>
+
+    <div style="font-size:12px;color:var(--muted);padding:12px 14px;background:var(--bg3);border-radius:9px;line-height:1.8;white-space:pre-line;margin-top:14px" id="sf-breakdown"></div>
+
+    <div class="sf-saved-tag" id="sf-saved"><div class="pulse-dot"></div> Saved to your coaching profile</div>
+
+    <div style="display:flex;gap:9px;margin-top:1.25rem;flex-wrap:wrap">
+      <button class="nbtn primary" style="flex:unset;width:auto;padding:12px 28px" onclick="sfSaveToProfile()">&#128190; Save to my profile</button>
+      <button class="nbtn" style="flex:unset;width:auto;padding:12px 28px" onclick="sfReset()">&#8635; Test again</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== 3D AIM RANGE ===== -->
+<div id="aim3d-tool" style="display:none">
+<div class="tool-wrap">
+  <div class="step-hd">
+    <div class="step-eyebrow">3D &middot; First-person</div>
+    <h2 class="step-title">3D Aim <span>Range</span></h2>
+    <p class="step-sub">A real first-person range rendered in 3D. Your mouse rotates the camera at your actual Valorant sensitivity (0.07&deg;/count), so flicking here feels exactly like the game. Snap to 10 wide targets then 4 tiny ones &mdash; we read your overshoot to tell you if your sens is right.</p>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="a3-inrow">
+      <div style="flex:1">
+        <div class="clabel">Mouse DPI</div>
+        <input class="num-inp" id="a3-dpi" type="number" min="100" max="8000" value="800" style="font-size:24px" oninput="aim3dSyncReadout()">
+      </div>
+      <div style="flex:1">
+        <div class="clabel">In-game sens</div>
+        <input class="num-inp" id="a3-sens" type="number" min="0.05" max="5" step="0.01" value="0.40" style="font-size:24px" oninput="aim3dSyncReadout()">
+      </div>
+    </div>
+    <!-- DPI x sens = eDPI explainer -->
+    <div class="a3-explain">
+      <div class="a3-eq">
+        <div class="a3-eqcell"><div class="a3-eqv" id="a3-eq-dpi">800</div><div class="a3-eqk">DPI</div></div>
+        <div class="a3-eqop">&times;</div>
+        <div class="a3-eqcell"><div class="a3-eqv" id="a3-eq-sens">0.40</div><div class="a3-eqk">in-game sens</div></div>
+        <div class="a3-eqop">=</div>
+        <div class="a3-eqcell"><div class="a3-eqv a3-eqv-out" id="a3-eq-edpi">320</div><div class="a3-eqk">eDPI</div></div>
+      </div>
+      <div class="a3-explain-txt">
+        <strong>DPI</strong> is your mouse's hardware speed (set in its software) &mdash; it's the same in every game.
+        <strong>In-game sens</strong> is Valorant's own multiplier on top of it.
+        Multiply them and you get <strong>eDPI</strong> &mdash; your <em>true</em> sensitivity, and the only number that decides how far your view turns per cm of mouse movement. Two players with the same eDPI aim identically even on different DPI.
+      </div>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;align-items:center">
+      <span style="font-size:11px;color:var(--dim)">Quick start:</span>
+      <button class="diff-chip" onclick="aim3dPreset(800,0.40)" style="font-size:11px;padding:4px 13px">&#127775; 800 &times; 0.40</button>
+      <button class="diff-chip" onclick="aim3dPreset(800,0.30)" style="font-size:11px;padding:4px 13px">800 &times; 0.30</button>
+      <button class="diff-chip" onclick="aim3dPreset(1600,0.25)" style="font-size:11px;padding:4px 13px">1600 &times; 0.25</button>
+      <button class="diff-chip" onclick="aim3dPreset(400,0.80)" style="font-size:11px;padding:4px 13px">400 &times; 0.80</button>
+    </div>
+    <div class="slider-hint" style="margin-top:10px">&#128161; <strong id="a3-readout">eDPI 320 &middot; 40.8 cm/360</strong> &mdash; uses <span class="sf-ov-kbd">pointer lock</span>. Move to look, click to shoot, <span class="sf-ov-kbd">Esc</span> to pause.</div>
+  </div>
+
+  <div class="sg-prog-bar" id="a3-prog"></div>
+  <div class="trainer-hud">
+    <div class="hud-stat"><div class="hud-val" id="a3-hits">&ndash;</div><div class="hud-lbl">Hits</div></div>
+    <div class="hud-stat"><div class="hud-val" id="a3-acc">&ndash;</div><div class="hud-lbl">Accuracy</div></div>
+    <div class="hud-stat"><div class="hud-val" id="a3-over">&ndash;</div><div class="hud-lbl">Overshoot</div></div>
+    <div class="hud-stat"><div class="hud-val" id="a3-ttk">&ndash;</div><div class="hud-lbl">Avg TTK</div></div>
+  </div>
+  <div style="margin-bottom:8px;min-height:30px">
+    <span class="sg-phase-badge" id="a3-phase" style="background:rgba(34,214,139,0.14);color:#22d68b;border:1px solid rgba(34,214,139,0.3)">&#129523; Phase 1 &mdash; Flick Shots (10)</span>
+  </div>
+
+  <div class="sf-canvas-wrap">
+    <canvas id="aim3d-canvas" width="720" height="380"></canvas>
+    <div class="sf-overlay" id="a3-overlay">
+      <div class="sf-ov-icon" id="a3-ov-icon">&#129523;</div>
+      <div class="sf-ov-title" id="a3-ov-title">Step into the 3D range</div>
+      <div class="sf-ov-sub" id="a3-ov-sub">Click to lock your mouse and look around in first person. Flick to each target and shoot &mdash; aim naturally, don't try to correct for the sens.</div>
+      <button class="nbtn primary" id="a3-ov-btn" style="flex:unset;width:auto;padding:11px 26px;margin-top:6px" onclick="aim3dOverlayAction()">&#9654; Enter range</button>
+    </div>
+  </div>
+
+  <div class="sg-verdict-box" id="a3-verdict">
+    <div class="sg-verdict-title" id="a3-vt"></div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:4px" id="a3-va"></div>
+    <div class="sg-stat-grid">
+      <div class="hud-stat"><div class="hud-val" id="a3-r-total">&ndash;</div><div class="hud-lbl">Total hits</div></div>
+      <div class="hud-stat"><div class="hud-val" id="a3-r-flick">&ndash;</div><div class="hud-lbl">Flick acc</div></div>
+      <div class="hud-stat"><div class="hud-val" id="a3-r-prec">&ndash;</div><div class="hud-lbl">Precision acc</div></div>
+      <div class="hud-stat"><div class="hud-val" id="a3-r-rt">&ndash;</div><div class="hud-lbl">Avg TTK</div></div>
+    </div>
+    <div class="clabel" style="margin:14px 0 8px">Overshoot &harr; Undershoot balance</div>
+    <div class="sf-biasmeter">
+      <div class="sf-biaslbl" style="left:10px">&larr; Undershoot</div>
+      <div class="sf-biaslbl" style="right:10px">Overshoot &rarr;</div>
+      <div class="sf-biasmid"></div>
+      <div class="sf-biaspin" id="a3-biaspin" style="left:50%;background:var(--green)"></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);padding:11px 14px;background:var(--bg3);border-radius:9px;line-height:1.8;white-space:pre-line;margin-top:14px" id="a3-breakdown"></div>
+    <div style="display:flex;gap:9px;margin-top:1.25rem;flex-wrap:wrap">
+      <button class="nbtn primary" style="flex:unset;width:auto;padding:12px 28px" onclick="aim3dStart()">&#8635; Run again</button>
+      <button class="nbtn" style="flex:unset;width:auto;padding:12px 28px" onclick="showTool('sf')">&#129518; Full Sens Finder</button>
+    </div>
+  </div>
+</div>
+</div>
+
 <footer>Built for Valorant players &nbsp;&middot;&nbsp; Not affiliated with Riot Games</footer>
 
 <script>
@@ -699,7 +937,7 @@ const P={exp:'Brand new — less than 1 week',rank:'Unranked',device:'PC with ga
 let issues=[],curStep=0;
 
 /* ===== TOOL NAV ===== */
-const TOOLS=['sens','xhair','trainer','sg'];
+const TOOLS=['sens','xhair','trainer','sg','sf','aim3d'];
 
 function _getActivePage(){
   const ids=['welcome','coach-flow',...TOOLS.map(t=>t+'-tool')];
@@ -743,6 +981,8 @@ function showTool(name){
     if(name==='xhair'){setTimeout(()=>{loadXhairFromStorage();xhairUpdate();},50);}
     if(name==='trainer'){initTrainerCanvas();}
     if(name==='sg'){initSGCanvas();}
+    if(name==='sf'){initSF();}
+    if(name==='aim3d'){initAim3D();}
     window.scrollTo({top:0,behavior:'smooth'});
   });
 }
@@ -752,7 +992,7 @@ function hideTool(){
     TOOLS.forEach(t=>document.getElementById(t+'-tool').style.display='none');
     _hideHdrBack();
     welcome.style.display='flex';
-    stopTrainer();sg.active=false;
+    stopTrainer();sg.active=false;sfStop();aim3dStop();
   });
 }
 
@@ -1422,6 +1662,821 @@ document.getElementById('sg-canvas').addEventListener('click',function(e){
   const rect=this.getBoundingClientRect(),sx=this.width/rect.width,sy=this.height/rect.height;
   handleSGClick((e.clientX-rect.left)*sx,(e.clientY-rect.top)*sy);
 });
+
+/* =====================================================================
+   SENSITIVITY FINDER
+   A 3-phase test that simulates different in-game sensitivities (via
+   pointer-lock + a gain factor on raw mouse deltas), measures flick /
+   tracking / precision telemetry, and solves for the user's ideal sens.
+   ===================================================================== */
+
+/* ---------- Config ---------- */
+const SF_BASE_EDPI=320;                 /* eDPI that maps to ~natural mouse feel */
+const SF_PHASE_EDPI=[200,520];          /* phase 1 (low) & phase 2 (high); phase 3 is computed */
+const SF_FLICK_N=6, SF_PREC_N=5;        /* targets per round */
+const SF_TRACK_MS=5000;                 /* tracking round duration */
+const SF_FLICK_R=26, SF_PREC_R=12, SF_TRACK_R=30;
+const SF_SHOT_TIMEOUT=2600;             /* auto-advance a flick/prec target after this */
+const SF_PROFILE_KEY='vac_profile';     /* localStorage "profile DB" key */
+
+/* ---------- State ---------- */
+let sf={running:false};
+function sfBlankState(){
+  return {running:false,paused:false,phaseIdx:0,phaseEdpi:[SF_PHASE_EDPI[0],SF_PHASE_EDPI[1],0],
+    round:null,roundIdx:0,gain:1,cx:360,cy:190,
+    tx:0,ty:0,tr:0,startCx:0,startCy:0,axisX:0,axisY:0,dist:0,peakProj:0,shotAt:0,deadline:0,
+    /* moving target (tracking) */ mvx:0,mvy:0,prevTx:0,prevTy:0,roundEnds:0,pauseRemain:0,
+    /* per-phase tallies */ ph:null,
+    phases:[], result:null, raf:0};
+}
+function sfFreshPhaseTally(){
+  return {flickHits:0,flickShots:0,precHits:0,precShots:0,
+    fOver:0,fUnder:0,pOver:0,pUnder:0,
+    trackOn:0,trackFrames:0,leadSum:0,leadFrames:0,ttks:[]};
+}
+
+/* =====================================================================
+   MATH ENGINE  (pure functions — testable in isolation)
+   ===================================================================== */
+
+/* eDPI <-> in-game sens for a given mouse DPI */
+function sfEdpiToSens(edpi,dpi){ return edpi/dpi; }
+function sfFmtSens(s){ return s<1?s.toFixed(3):s.toFixed(2); }
+
+/* Roll a phase's raw tallies into accuracy + a signed overshoot bias in [-1,+1].
+   bias > 0  => overshooting  => sensitivity too HIGH
+   bias < 0  => undershooting => sensitivity too LOW   */
+function sfPhaseMetrics(edpi,sens,t){
+  const flickAcc=t.flickShots?t.flickHits/t.flickShots:0;
+  const precAcc =t.precShots ?t.precHits /t.precShots :0;
+  const trackAcc=t.trackFrames?t.trackOn/t.trackFrames:0;
+  const biasFlick=(t.fOver+t.fUnder)?(t.fOver-t.fUnder)/(t.fOver+t.fUnder):0;
+  const biasPrec =(t.pOver+t.pUnder)?(t.pOver-t.pUnder)/(t.pOver+t.pUnder):0;
+  /* tracking lead: average signed distance ahead of the target along its motion */
+  const avgLead=t.leadFrames?t.leadSum/t.leadFrames:0;
+  const biasTrack=Math.max(-1,Math.min(1,avgLead/SF_TRACK_R));
+  /* weighted composites — flick carries the strongest sens signal */
+  const phaseBias=0.5*biasFlick+0.3*biasPrec+0.2*biasTrack;
+  const phaseAcc =0.42*flickAcc+0.33*precAcc+0.25*trackAcc;
+  const dirSamples=t.fOver+t.fUnder+t.pOver+t.pUnder;
+  const avgTTK=t.ttks.length?t.ttks.reduce((a,b)=>a+b,0)/t.ttks.length:0;
+  return {edpi,sens,flickAcc,precAcc,trackAcc,biasFlick,biasPrec,biasTrack,
+          phaseBias,phaseAcc,dirSamples,avgTTK};
+}
+
+/* Secant root-find: estimate the eDPI where bias crosses zero, given two points. */
+function sfSecant(e0,b0,e1,b1){
+  const denom=(b1-b0);
+  if(Math.abs(denom)<1e-4) return null;        /* flat — no usable signal */
+  return e0 - b0*(e1-e0)/denom;
+}
+
+/* Accuracy-weighted average eDPI (robust fallback when the bias signal is noisy). */
+function sfScoreWeightedEdpi(phases){
+  let num=0,den=0;
+  phases.forEach(p=>{ const w=Math.max(0.05,p.phaseAcc); num+=p.edpi*w; den+=w; });
+  return den?num/den:SF_BASE_EDPI;
+}
+
+/* Master solver. Takes the completed phases, returns the recommended eDPI,
+   a confidence score, the method used, and the residual bias at the answer. */
+function sfComputeOptimal(phases,bounds){
+  const lo=bounds[0], hi=bounds[1];
+  const clamp=e=>Math.max(lo,Math.min(hi,e));
+  const weighted=sfScoreWeightedEdpi(phases);
+
+  /* 1. Try a secant on the sign-changing bracket (true zero-crossing of bias). */
+  let secantEst=null;
+  const sorted=[...phases].sort((a,b)=>a.edpi-b.edpi);
+  for(let i=0;i<sorted.length-1;i++){
+    const a=sorted[i],b=sorted[i+1];
+    if((a.phaseBias<=0&&b.phaseBias>=0)||(a.phaseBias>=0&&b.phaseBias<=0)){
+      secantEst=sfSecant(a.edpi,a.phaseBias,b.edpi,b.phaseBias); break;
+    }
+  }
+  /* 2. If nothing bracketed zero, secant across the full low/high span anyway. */
+  if(secantEst===null){
+    const a=sorted[0],b=sorted[sorted.length-1];
+    secantEst=sfSecant(a.edpi,a.phaseBias,b.edpi,b.phaseBias);
+  }
+
+  /* 3. Confidence: more directional samples + tighter accuracy = more trust in
+        the bias signal vs the weighted-average fallback. */
+  const totalDir=phases.reduce((s,p)=>s+p.dirSamples,0);
+  const sampleConf=Math.min(1,totalDir/14);
+  const bestAcc=Math.max(...phases.map(p=>p.phaseAcc));
+  const conf=Math.max(0,Math.min(1,0.55*sampleConf+0.45*bestAcc));
+
+  /* 4. Blend the secant estimate toward the safe weighted average by (1-conf). */
+  let edpi;
+  if(secantEst===null||!isFinite(secantEst)){ edpi=weighted; }
+  else{ edpi=conf*clamp(secantEst)+(1-conf)*weighted; }
+  edpi=clamp(edpi);
+
+  /* 5. Residual bias at the answer: interpolate the bias curve at `edpi`. */
+  let residual=0;
+  for(let i=0;i<sorted.length-1;i++){
+    const a=sorted[i],b=sorted[i+1];
+    if(edpi>=a.edpi&&edpi<=b.edpi){
+      const f=(edpi-a.edpi)/Math.max(1,b.edpi-a.edpi);
+      residual=a.phaseBias+f*(b.phaseBias-a.phaseBias); break;
+    }
+  }
+  const method=secantEst!==null&&isFinite(secantEst)
+    ?(conf>0.6?'secant zero-crossing':'secant + weighted blend')
+    :'accuracy-weighted average';
+  return {edpi:Math.round(edpi),confidence:conf,method,residual};
+}
+
+/* =====================================================================
+   TEST DRIVER
+   ===================================================================== */
+function sfCanvas(){ return document.getElementById('sf-canvas'); }
+function sfGetDpi(){ return Math.max(100,parseInt(document.getElementById('sf-dpi').value)||800); }
+
+function initSF(){
+  sfStop();
+  sf=sfBlankState();
+  const c=sfCanvas(),ctx=c.getContext('2d');
+  sfDrawGrid(ctx,c.width,c.height);
+  document.getElementById('sf-results').classList.remove('show');
+  document.getElementById('sf-saved').classList.remove('show');
+  document.getElementById('sf-roundbadge').style.visibility='hidden';
+  ['sf-hud-flick','sf-hud-track','sf-hud-prec','sf-hud-ttk'].forEach(id=>document.getElementById(id).textContent='–');
+  document.getElementById('sf-pv-2').textContent='?';
+  for(let i=0;i<3;i++)document.getElementById('sf-pseg-'+i).className='sf-pseg';
+  sfShowOverlay('🧪','Find your perfect sensitivity',
+    "3 phases · flick, track & precision in each. Click below to lock your mouse and begin. Aim naturally — don't try to \"correct\" for the sens, just play.",
+    '▶ Start test');
+}
+
+function sfShowOverlay(icon,title,sub,btn){
+  document.getElementById('sf-ov-icon').textContent=icon;
+  document.getElementById('sf-ov-title').textContent=title;
+  document.getElementById('sf-ov-sub').textContent=sub;
+  document.getElementById('sf-ov-btn').innerHTML=btn;
+  document.getElementById('sf-overlay').classList.remove('hide');
+}
+function sfHideOverlay(){ document.getElementById('sf-overlay').classList.add('hide'); }
+
+/* Overlay button: starts the test, or resumes after a pause. */
+function sfOverlayAction(){
+  if(sf.paused){ sfRequestLock(); return; }
+  sfStart();
+}
+
+function sfStart(){
+  sf=sfBlankState();
+  sf.running=true;
+  document.getElementById('sf-results').classList.remove('show');
+  sfStartPhase(0);
+  sfRequestLock();
+}
+
+function sfRequestLock(){
+  const c=sfCanvas();
+  c.requestPointerLock=c.requestPointerLock||c.mozRequestPointerLock;
+  if(!c.requestPointerLock){ sf.noLock=true; sfBeginAfterLock(); return; }
+  try{
+    const ret=c.requestPointerLock();
+    /* modern browsers return a promise; a rejection means no lock -> fallback */
+    if(ret&&typeof ret.then==='function')ret.catch(()=>{ sf.noLock=true; sfBeginAfterLock(); });
+  }catch(e){ sf.noLock=true; sfBeginAfterLock(); }
+}
+
+/* Pointer-lock lifecycle */
+document.addEventListener('pointerlockchange',sfOnLockChange);
+document.addEventListener('mozpointerlockchange',sfOnLockChange);
+function sfOnLockChange(){
+  const locked=document.pointerLockElement===sfCanvas();
+  if(locked){ sfBeginAfterLock(); }
+  else if(sf.running&&!sf.paused){ sfPause(); }
+}
+function sfBeginAfterLock(){
+  if(!sf.running)return;
+  sfHideOverlay();
+  if(sf.paused){            /* resuming */
+    sf.paused=false;
+    if(sf.round==='track')sf.roundEnds=performance.now()+sf.pauseRemain;
+    else sf.deadline=performance.now()+SF_SHOT_TIMEOUT;
+    sf.shotAt=performance.now();
+  }
+  sf.raf=requestAnimationFrame(sfFrame);
+}
+function sfPause(){
+  sf.paused=true;
+  cancelAnimationFrame(sf.raf);
+  if(sf.round==='track')sf.pauseRemain=Math.max(0,sf.roundEnds-performance.now());
+  sfShowOverlay('⏸','Paused','Your mouse was released. Click to re-lock and pick up where you left off.','▶ Resume');
+}
+
+/* ----- Phases & rounds ----- */
+const SF_ROUNDS=['flick','track','prec'];
+function sfStartPhase(i){
+  sf.phaseIdx=i;
+  sf.ph=sfFreshPhaseTally();
+  sf.gain=sf.phaseEdpi[i]/SF_BASE_EDPI;
+  for(let k=0;k<3;k++){
+    const seg=document.getElementById('sf-pseg-'+k);
+    seg.className='sf-pseg'+(k<i?' done':k===i?' cur':'');
+  }
+  sf.roundIdx=0;
+  sfStartRound();
+}
+function sfStartRound(){
+  sf.round=SF_ROUNDS[sf.roundIdx];
+  const c=sfCanvas();
+  sf.cx=c.width/2; sf.cy=c.height/2;
+  const badge=document.getElementById('sf-roundbadge');
+  badge.style.visibility='visible';
+  if(sf.round==='flick'){badge.innerHTML='⚡ Flick &mdash; snap to each target';}
+  else if(sf.round==='track'){badge.innerHTML='🎯 Track &mdash; keep your crosshair on the mover';}
+  else{badge.innerHTML='🔬 Precision &mdash; small targets, be exact';}
+  if(sf.round==='track'){
+    sf.roundEnds=performance.now()+SF_TRACK_MS;
+    sf.tr=SF_TRACK_R;
+    sf.tx=c.width/2; sf.ty=c.height/2;
+    const ang=Math.random()*Math.PI*2,spd=2.0+sf.gain*0.6;
+    sf.mvx=Math.cos(ang)*spd; sf.mvy=Math.sin(ang)*spd;
+    sf.prevTx=sf.tx; sf.prevTy=sf.ty;
+  }else{
+    sf.roundCount=(sf.round==='flick'?SF_FLICK_N:SF_PREC_N);
+    sf.roundDone=0;
+    sfSpawnTarget();
+  }
+}
+function sfSpawnTarget(){
+  const c=sfCanvas(),w=c.width,h=c.height;
+  sf.tr=(sf.round==='flick'?SF_FLICK_R:SF_PREC_R);
+  let nx,ny;
+  if(sf.round==='flick'){ nx=sf.tr+8+Math.random()*(w-2*sf.tr-16); ny=sf.tr+8+Math.random()*(h-2*sf.tr-16); }
+  else{ const zw=w*0.4,zh=h*0.4; nx=(w-zw)/2+sf.tr+Math.random()*(zw-2*sf.tr); ny=(h-zh)/2+sf.tr+Math.random()*(zh-2*sf.tr); }
+  sf.tx=nx; sf.ty=ny;
+  sf.startCx=sf.cx; sf.startCy=sf.cy;
+  const ax=sf.tx-sf.cx, ay=sf.ty-sf.cy, len=Math.hypot(ax,ay)||1;
+  sf.axisX=ax/len; sf.axisY=ay/len; sf.dist=len; sf.peakProj=0;
+  sf.shotAt=performance.now(); sf.deadline=sf.shotAt+SF_SHOT_TIMEOUT;
+}
+
+/* Mouse input. Locked mode = raw deltas * sens gain (real sensitivity sim).
+   Fallback (noLock) = absolute cursor follow so the test still runs. */
+document.addEventListener('mousemove',function(e){
+  if(!sf.running||sf.paused)return;
+  const c=sfCanvas(),rect=c.getBoundingClientRect(),scale=c.width/rect.width;
+  if(document.pointerLockElement===sfCanvas()){
+    sf.cx=Math.max(0,Math.min(c.width, sf.cx+(e.movementX||0)*scale*sf.gain));
+    sf.cy=Math.max(0,Math.min(c.height,sf.cy+(e.movementY||0)*scale*sf.gain));
+  }else if(sf.noLock){
+    sf.cx=Math.max(0,Math.min(c.width, (e.clientX-rect.left)*scale));
+    sf.cy=Math.max(0,Math.min(c.height,(e.clientY-rect.top)*scale));
+  }else return;
+  /* track furthest the crosshair travelled along the spawn->target axis */
+  if(sf.round==='flick'||sf.round==='prec'){
+    const proj=(sf.cx-sf.startCx)*sf.axisX+(sf.cy-sf.startCy)*sf.axisY;
+    if(proj>sf.peakProj)sf.peakProj=proj;
+  }
+});
+
+/* Shooting */
+sfCanvas().addEventListener('mousedown',function(e){
+  if(!sf.running||sf.paused)return;
+  if(document.pointerLockElement!==sfCanvas()&&!sf.noLock){ sfRequestLock(); return; }
+  if(sf.round==='flick'||sf.round==='prec')sfShoot();
+});
+function sfShoot(){
+  const t=sf.ph,dist=Math.hypot(sf.cx-sf.tx,sf.cy-sf.ty),hit=dist<=sf.tr;
+  if(sf.round==='flick')t.flickShots++; else t.precShots++;
+  if(hit){ if(sf.round==='flick')t.flickHits++; else t.precHits++; t.ttks.push(performance.now()-sf.shotAt); }
+  /* directional signal: did the path reach past the target (overshoot) or stop short (undershoot)? */
+  const reach=sf.peakProj-sf.dist;       /* >0 went past center, <0 fell short */
+  const thr=sf.tr*0.35;
+  if(reach>thr){ if(sf.round==='flick')t.fOver++; else t.pOver++; }
+  else if(reach<-thr){ if(sf.round==='flick')t.fUnder++; else t.pUnder++; }
+  sfAdvanceTarget();
+}
+function sfAdvanceTarget(){
+  sf.roundDone++;
+  if(sf.roundDone>=sf.roundCount)sfEndRound();
+  else sfSpawnTarget();
+}
+/* a flick/prec target that timed out = a hard miss + undershoot (never got there) */
+function sfTimeoutTarget(){
+  const t=sf.ph;
+  if(sf.round==='flick'){t.flickShots++; if((sf.peakProj-sf.dist)<-sf.tr*0.35)t.fUnder++;}
+  else{t.precShots++; if((sf.peakProj-sf.dist)<-sf.tr*0.35)t.pUnder++;}
+  sfAdvanceTarget();
+}
+
+function sfEndRound(){
+  sf.roundIdx++;
+  if(sf.roundIdx<SF_ROUNDS.length){ sfStartRound(); }
+  else sfEndPhase();
+}
+function sfEndPhase(){
+  const i=sf.phaseIdx, dpi=sfGetDpi(), edpi=sf.phaseEdpi[i];
+  sf.phases[i]=sfPhaseMetrics(edpi,sfEdpiToSens(edpi,dpi),sf.ph);
+  document.getElementById('sf-pseg-'+i).className='sf-pseg done';
+  if(i===1){
+    /* compute phase 3 (mid/calculated) eDPI from phases 1 & 2 */
+    const est=sfComputeOptimal(sf.phases,[SF_PHASE_EDPI[0],SF_PHASE_EDPI[1]]).edpi;
+    sf.phaseEdpi[2]=Math.max(SF_PHASE_EDPI[0],Math.min(SF_PHASE_EDPI[1],est));
+    document.getElementById('sf-pv-2').textContent=sf.phaseEdpi[2];
+    sfStartPhase(2);
+  }else if(i<2){ sfStartPhase(i+1); }
+  else{ sfFinish(); }
+}
+
+/* ----- Frame loop: timers, motion, draw, HUD ----- */
+function sfFrame(now){
+  if(!sf.running||sf.paused)return;
+  if(sf.round==='track'){
+    /* bounce the mover; sample on-target % and signed lead along motion */
+    const c=sfCanvas();
+    sf.prevTx=sf.tx; sf.prevTy=sf.ty;
+    sf.tx+=sf.mvx; sf.ty+=sf.mvy;
+    if(sf.tx<sf.tr||sf.tx>c.width-sf.tr){sf.mvx*=-1; sf.tx=Math.max(sf.tr,Math.min(c.width-sf.tr,sf.tx));}
+    if(sf.ty<sf.tr||sf.ty>c.height-sf.tr){sf.mvy*=-1; sf.ty=Math.max(sf.tr,Math.min(c.height-sf.tr,sf.ty));}
+    const t=sf.ph,d=Math.hypot(sf.cx-sf.tx,sf.cy-sf.ty);
+    t.trackFrames++; if(d<=sf.tr)t.trackOn++;
+    const vlen=Math.hypot(sf.mvx,sf.mvy)||1;
+    t.leadSum+=((sf.cx-sf.tx)*sf.mvx+(sf.cy-sf.ty)*sf.mvy)/vlen; t.leadFrames++;
+    if(now>=sf.roundEnds)sfEndRound();
+  }else{
+    if(now>=sf.deadline)sfTimeoutTarget();
+  }
+  sfDraw();
+  sfLiveHud();
+  if(sf.running&&!sf.paused)sf.raf=requestAnimationFrame(sfFrame);
+}
+
+function sfLiveHud(){
+  const t=sf.ph;
+  document.getElementById('sf-hud-flick').textContent=t.flickShots?Math.round(t.flickHits/t.flickShots*100)+'%':'–';
+  document.getElementById('sf-hud-track').textContent=t.trackFrames?Math.round(t.trackOn/t.trackFrames*100)+'%':'–';
+  document.getElementById('sf-hud-prec').textContent=t.precShots?Math.round(t.precHits/t.precShots*100)+'%':'–';
+  document.getElementById('sf-hud-ttk').textContent=t.ttks.length?Math.round(t.ttks.reduce((a,b)=>a+b,0)/t.ttks.length)+'ms':'–';
+}
+
+/* ----- Rendering ----- */
+function sfDrawGrid(ctx,w,h){
+  ctx.fillStyle='#0b0b0e';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+}
+function sfDraw(){
+  const c=sfCanvas(),ctx=c.getContext('2d'),w=c.width,h=c.height;
+  sfDrawGrid(ctx,w,h);
+  if(sf.round==='prec'){const zw=w*0.4,zh=h*0.4;ctx.fillStyle='rgba(124,92,252,0.05)';ctx.beginPath();ctx.roundRect((w-zw)/2,(h-zh)/2,zw,zh,12);ctx.fill();ctx.strokeStyle='rgba(124,92,252,0.13)';ctx.stroke();}
+  /* target */
+  const moving=sf.round==='track';
+  const col=moving?'#22d68b':(sf.round==='prec'?'#a48dfd':'#ff4655');
+  const grd=ctx.createRadialGradient(sf.tx,sf.ty,sf.tr*0.4,sf.tx,sf.ty,sf.tr*1.9);
+  grd.addColorStop(0,col+'22');grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;ctx.beginPath();ctx.arc(sf.tx,sf.ty,sf.tr*1.9,0,7);ctx.fill();
+  ctx.beginPath();ctx.arc(sf.tx,sf.ty,sf.tr,0,7);ctx.fillStyle=col+'28';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(sf.tx,sf.ty,Math.max(3,sf.tr*0.32),0,7);ctx.fillStyle=col;ctx.fill();
+  /* crosshair */
+  ctx.strokeStyle='#22d68b';ctx.lineWidth=1.6;const g=2,L=8;
+  ctx.beginPath();
+  ctx.moveTo(sf.cx-g-L,sf.cy);ctx.lineTo(sf.cx-g,sf.cy);
+  ctx.moveTo(sf.cx+g,sf.cy);ctx.lineTo(sf.cx+g+L,sf.cy);
+  ctx.moveTo(sf.cx,sf.cy-g-L);ctx.lineTo(sf.cx,sf.cy-g);
+  ctx.moveTo(sf.cx,sf.cy+g);ctx.lineTo(sf.cx,sf.cy+g+L);
+  ctx.stroke();
+  ctx.beginPath();ctx.arc(sf.cx,sf.cy,1.3,0,7);ctx.fillStyle='#22d68b';ctx.fill();
+}
+
+/* ----- Results ----- */
+function sfFinish(){
+  sf.running=false;
+  if(document.pointerLockElement===sfCanvas())document.exitPointerLock();
+  cancelAnimationFrame(sf.raf);
+  const dpi=sfGetDpi();
+  const res=sfComputeOptimal(sf.phases,[180,560]);
+  res.sens=sfEdpiToSens(res.edpi,dpi);
+  res.dpi=dpi;
+  sf.result=res;
+  sfRenderResults(res);
+}
+
+function sfRenderResults(res){
+  document.getElementById('sf-final-sens').textContent=sfFmtSens(res.sens);
+  document.getElementById('sf-final-sub').innerHTML=`eDPI <strong>${res.edpi}</strong> &middot; ${res.sens.toFixed(3)} sens @ ${res.dpi} DPI<br><span style="font-size:11px;color:var(--dim)">Method: ${res.method}</span>`;
+
+  const confPct=Math.round(res.confidence*100);
+  const cTag=document.getElementById('sf-conf');
+  cTag.textContent=`Confidence ${confPct}%`;
+  if(confPct>=66){cTag.style.cssText='background:rgba(34,214,139,0.15);color:#22d68b';}
+  else if(confPct>=40){cTag.style.cssText='background:rgba(245,166,35,0.15);color:#f5a623';}
+  else{cTag.style.cssText='background:rgba(255,70,85,0.15);color:#ff6b77';}
+
+  /* bias meter: -1 (under) .. +1 (over) -> 0..100% */
+  const pin=document.getElementById('sf-biaspin');
+  const pos=Math.max(4,Math.min(96,50+res.residual*46));
+  pin.style.left=pos+'%';
+  pin.style.background=Math.abs(res.residual)<0.18?'var(--green)':(res.residual>0?'var(--red)':'var(--amber)');
+
+  /* per-phase bars */
+  const names=['Phase 1 · Low','Phase 2 · High','Phase 3 · Calc'];
+  const cols=['#ff4655','#a48dfd','#22d68b'];
+  const bars=document.getElementById('sf-bars');bars.innerHTML='';
+  sf.phases.forEach((p,i)=>{
+    const acc=Math.round(p.phaseAcc*100);
+    const row=document.createElement('div');row.className='sf-barrow';
+    row.innerHTML=`<div class="sf-bartop"><span class="sf-barname">${names[i]}</span><span class="sf-baredpi">eDPI ${p.edpi} · ${sfFmtSens(p.sens)}</span></div>`+
+      `<div style="display:flex;align-items:center;gap:9px"><div class="sf-bartrack" style="flex:1"><div class="sf-barfill" style="background:${cols[i]}"></div></div><span class="sf-barpct">${acc}%</span></div>`;
+    bars.appendChild(row);
+    requestAnimationFrame(()=>{row.querySelector('.sf-barfill').style.width=acc+'%';});
+  });
+
+  /* set-in-Valorant cards for common DPIs */
+  const dpirow=document.getElementById('sf-dpirow');dpirow.innerHTML='';
+  [400,800,1600].forEach(d=>{
+    const s=sfEdpiToSens(res.edpi,d);
+    const card=document.createElement('div');card.className='sf-dpicard';
+    card.innerHTML=`<div class="sf-dpicard-d">${d} DPI</div><div class="sf-dpicard-s">${sfFmtSens(s)}</div>`;
+    dpirow.appendChild(card);
+  });
+
+  /* narrative breakdown */
+  const best=sf.phases.reduce((a,b)=>b.phaseAcc>a.phaseAcc?b:a,sf.phases[0]);
+  const bestN=names[sf.phases.indexOf(best)];
+  let dir;
+  if(res.residual>0.18)dir=`You still lean toward overshooting at this sens — if it feels twitchy after a week, drop eDPI by ~10.`;
+  else if(res.residual<-0.18)dir=`You still lean toward undershooting — if targets feel just out of reach, nudge eDPI up by ~10.`;
+  else dir=`Your overshoot/undershoot is balanced here — this is a genuine sweet spot.`;
+  document.getElementById('sf-breakdown').textContent=
+    `You aimed best in ${bestN} (${Math.round(best.phaseAcc*100)}%).\n`+
+    `Avg time-to-kill across phases: ${Math.round(sf.phases.reduce((s,p)=>s+p.avgTTK,0)/sf.phases.length)}ms.\n`+
+    `${dir}\n\nGive any new sensitivity at least 1–2 weeks of consistent play before judging it. Re-run this test monthly as your mechanics improve.`;
+
+  document.getElementById('sf-results').classList.add('show');
+  document.getElementById('sf-saved').classList.remove('show');
+  document.getElementById('sf-roundbadge').style.visibility='hidden';
+  const ctx=sfCanvas().getContext('2d');sfDrawGrid(ctx,720,380);
+  document.getElementById('sf-results').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ----- Profile persistence (the "database") ----- */
+function sfLoadProfile(){ try{return JSON.parse(localStorage.getItem(SF_PROFILE_KEY))||{};}catch(e){return {};} }
+function sfSaveProfile(p){ try{localStorage.setItem(SF_PROFILE_KEY,JSON.stringify(p));}catch(e){} }
+function sfSaveToProfile(){
+  if(!sf.result)return;
+  const p=sfLoadProfile();
+  p.perfectSens={
+    sens:+sf.result.sens.toFixed(3), edpi:sf.result.edpi, dpi:sf.result.dpi,
+    confidence:+sf.result.confidence.toFixed(2),
+    measuredAt:new Date().toISOString()
+  };
+  p.sensHistory=(p.sensHistory||[]).concat([p.perfectSens]).slice(-20);
+  sfSaveProfile(p);
+  document.getElementById('sf-saved').classList.add('show');
+}
+
+function sfReset(){ initSF(); }
+function sfStop(){
+  if(sf&&sf.running){ sf.running=false; cancelAnimationFrame(sf.raf); }
+  if(document.pointerLockElement===sfCanvas())document.exitPointerLock();
+}
+
+/* =========================================================================
+   3D AIM RANGE  — a real first-person flick range rendered on a 2D canvas.
+   Mouse (pointer-lock) rotates a yaw/pitch camera at the player's actual
+   Valorant sensitivity (0.07°/count). Targets live in 3D world space and are
+   projected with a hand-rolled perspective camera; a shot raycasts the centre
+   crosshair and we read overshoot/undershoot to judge the sensitivity.
+   ========================================================================= */
+const A3_FLICK_N=10, A3_PREC_N=4;          /* targets per phase */
+const A3_TOTAL=A3_FLICK_N+A3_PREC_N;
+const A3_DEG_PER_COUNT=0.07;               /* Valorant yaw constant */
+const A3_FOV=1.20;                         /* render field of view (rad) */
+const A3_EYE=1.65;                         /* camera height above floor */
+const A3_DIST=15;                          /* target distance from player */
+const A3_SHOT_MS=2600;                     /* per-target time limit */
+let a3={running:false};
+
+function a3Canvas(){ return document.getElementById('aim3d-canvas'); }
+function a3Dpi(){ return Math.max(100,parseInt(document.getElementById('a3-dpi').value)||800); }
+function a3Sens(){ return Math.max(0.05,parseFloat(document.getElementById('a3-sens').value)||0.4); }
+function a3FmtSens(s){ return s<1?s.toFixed(3):s.toFixed(2); }
+
+function a3Blank(){
+  return {running:false,paused:false,raf:0,phase:0,idx:0,noLock:false,
+    yaw:0,pitch:0,radPerCount:0,
+    tgt:null,spawnYaw:0,spawnPitch:0,axX:0,axY:0,needAng:0,peakProj:0,shotAt:0,deadline:0,
+    flickShots:0,flickHits:0,precShots:0,precHits:0,over:0,under:0,ttks:[],result:null};
+}
+
+function aim3dSyncReadout(){
+  const dpi=a3Dpi(),sens=a3Sens(),edpi=Math.round(dpi*sens);
+  /* cm/360 = (360 / (0.07*eDPI)) inches * 2.54 */
+  const cm=(360/(A3_DEG_PER_COUNT*edpi))*2.54;
+  document.getElementById('a3-readout').textContent=`eDPI ${edpi} · ${cm.toFixed(1)} cm/360`;
+  /* live DPI × sens = eDPI explainer */
+  document.getElementById('a3-eq-dpi').textContent=dpi;
+  document.getElementById('a3-eq-sens').textContent=a3FmtSens(sens);
+  document.getElementById('a3-eq-edpi').textContent=edpi;
+}
+function aim3dPreset(dpi,sens){
+  document.getElementById('a3-dpi').value=dpi;
+  document.getElementById('a3-sens').value=sens;
+  aim3dSyncReadout();
+}
+
+function initAim3D(){
+  aim3dStop();
+  a3=a3Blank();
+  aim3dSyncReadout();
+  a3DrawScene();
+  document.getElementById('a3-verdict').classList.remove('show');
+  document.getElementById('a3-phase').innerHTML='🧊 Phase 1 — Flick Shots ('+A3_FLICK_N+')';
+  ['a3-hits','a3-acc','a3-over','a3-ttk'].forEach(id=>document.getElementById(id).textContent='–');
+  a3RenderProg();
+  a3ShowOverlay('🧊','Step into the 3D range',
+    "Click to lock your mouse and look around in first person. Flick to each target and shoot — aim naturally, don't try to correct for the sens.",
+    '▶ Enter range');
+}
+
+function a3ShowOverlay(icon,title,sub,btn){
+  document.getElementById('a3-ov-icon').textContent=icon;
+  document.getElementById('a3-ov-title').textContent=title;
+  document.getElementById('a3-ov-sub').textContent=sub;
+  document.getElementById('a3-ov-btn').innerHTML=btn;
+  document.getElementById('a3-overlay').classList.remove('hide');
+}
+function a3HideOverlay(){ document.getElementById('a3-overlay').classList.add('hide'); }
+
+function aim3dOverlayAction(){
+  if(a3.paused){ a3RequestLock(); return; }
+  aim3dStart();
+}
+
+function aim3dStart(){
+  a3=a3Blank();
+  a3.running=true;
+  a3.radPerCount=A3_DEG_PER_COUNT*a3Sens()*Math.PI/180;
+  document.getElementById('a3-verdict').classList.remove('show');
+  ['a3-hits','a3-acc','a3-over','a3-ttk'].forEach(id=>document.getElementById(id).textContent='–');
+  a3RenderProg();
+  a3Spawn();
+  a3RequestLock();
+}
+
+function a3RequestLock(){
+  const c=a3Canvas();
+  c.requestPointerLock=c.requestPointerLock||c.mozRequestPointerLock;
+  if(!c.requestPointerLock){ a3.noLock=true; a3BeginAfterLock(); return; }
+  try{
+    const ret=c.requestPointerLock();
+    if(ret&&typeof ret.then==='function')ret.catch(()=>{ a3.noLock=true; a3BeginAfterLock(); });
+  }catch(e){ a3.noLock=true; a3BeginAfterLock(); }
+}
+document.addEventListener('pointerlockchange',a3OnLockChange);
+document.addEventListener('mozpointerlockchange',a3OnLockChange);
+function a3OnLockChange(){
+  if(!a3.running)return;
+  const locked=document.pointerLockElement===a3Canvas();
+  if(locked){ a3BeginAfterLock(); }
+  else if(!a3.paused){ a3Pause(); }
+}
+function a3BeginAfterLock(){
+  if(!a3.running)return;
+  a3HideOverlay();
+  if(a3.paused){ a3.paused=false; a3.deadline=performance.now()+A3_SHOT_MS; a3.shotAt=performance.now(); }
+  a3.raf=requestAnimationFrame(a3Frame);
+}
+function a3Pause(){
+  a3.paused=true;
+  cancelAnimationFrame(a3.raf);
+  a3ShowOverlay('⏸','Paused','Your mouse was released. Click to re-lock and keep going.','▶ Resume');
+}
+
+/* ---- target spawning: pick a world azimuth/elevation that requires a flick ---- */
+function a3Spawn(){
+  const flick=a3.idx<A3_FLICK_N;
+  const r=flick?0.62:0.30;
+  /* offset relative to where the player is currently looking so it's a real flick */
+  const side=Math.random()<0.5?-1:1;
+  const az=a3.yaw + side*(0.35+Math.random()*0.55);        /* ~20°–52° away */
+  const el=Math.max(-0.32,Math.min(0.32, a3.pitch + (Math.random()-0.5)*0.42));
+  a3.tgt={az:az,el:el,r:r,dist:A3_DIST,flick:flick};
+  a3.spawnYaw=a3.yaw; a3.spawnPitch=a3.pitch;
+  let daz=az-a3.yaw; while(daz>Math.PI)daz-=2*Math.PI; while(daz<-Math.PI)daz+=2*Math.PI;
+  const del=el-a3.pitch, len=Math.hypot(daz,del)||1;
+  a3.axX=daz/len; a3.axY=del/len; a3.needAng=len; a3.peakProj=0;
+  a3.shotAt=performance.now(); a3.deadline=a3.shotAt+A3_SHOT_MS;
+}
+
+/* ---- look: raw mouse deltas -> yaw/pitch at the chosen sensitivity ---- */
+document.addEventListener('mousemove',function(e){
+  if(!a3.running||a3.paused)return;
+  const locked=document.pointerLockElement===a3Canvas();
+  if(!locked&&!a3.noLock)return;
+  const g=a3.radPerCount;
+  a3.yaw+=(e.movementX||0)*g;
+  a3.pitch-=(e.movementY||0)*g;
+  a3.pitch=Math.max(-1.3,Math.min(1.3,a3.pitch));
+  /* track furthest progress along the spawn->target axis (overshoot signal) */
+  if(a3.tgt){
+    let dyaw=a3.yaw-a3.spawnYaw; while(dyaw>Math.PI)dyaw-=2*Math.PI; while(dyaw<-Math.PI)dyaw+=2*Math.PI;
+    const proj=dyaw*a3.axX+(a3.pitch-a3.spawnPitch)*a3.axY;
+    if(proj>a3.peakProj)a3.peakProj=proj;
+  }
+});
+
+/* ---- shoot: raycast the centre crosshair against the target ---- */
+a3Canvas().addEventListener('mousedown',function(){
+  if(!a3.running||a3.paused)return;
+  if(document.pointerLockElement!==a3Canvas()&&!a3.noLock){ a3RequestLock(); return; }
+  a3Shoot();
+});
+function a3Shoot(){
+  const t=a3.tgt; if(!t)return;
+  /* angle between forward crosshair and the direction to the target centre */
+  const angRad=Math.atan(t.r/t.dist);
+  const dot=Math.cos(t.el)*Math.cos(a3.pitch)*Math.cos(t.az-a3.yaw)+Math.sin(t.el)*Math.sin(a3.pitch);
+  const ang=Math.acos(Math.max(-1,Math.min(1,dot)));
+  const hit=ang<=angRad;
+  if(t.flick)a3.flickShots++; else a3.precShots++;
+  if(hit){ if(t.flick)a3.flickHits++; else a3.precHits++; a3.ttks.push(performance.now()-a3.shotAt); }
+  const reach=a3.peakProj-a3.needAng, thr=angRad*0.45;
+  if(reach>thr)a3.over++; else if(reach<-thr)a3.under++;
+  a3Advance(hit);
+}
+function a3Timeout(){
+  if(a3.tgt.flick)a3.flickShots++; else a3.precShots++;
+  if((a3.peakProj-a3.needAng)<-Math.atan(a3.tgt.r/a3.tgt.dist)*0.45)a3.under++;
+  a3Advance(false);
+}
+function a3Advance(){
+  a3.idx++;
+  a3RenderProg();
+  if(a3.idx>=A3_TOTAL){ a3Finish(); return; }
+  if(a3.idx===A3_FLICK_N)document.getElementById('a3-phase').innerHTML='🔬 Phase 2 — Precision Shots ('+A3_PREC_N+')';
+  a3Spawn();
+}
+
+/* ---- per-frame: timers, draw, HUD ---- */
+function a3Frame(now){
+  if(!a3.running||a3.paused)return;
+  if(now>=a3.deadline)a3Timeout();
+  if(!a3.running)return;
+  a3DrawScene();
+  a3LiveHud();
+  if(a3.running&&!a3.paused)a3.raf=requestAnimationFrame(a3Frame);
+}
+function a3LiveHud(){
+  const shots=a3.flickShots+a3.precShots, hits=a3.flickHits+a3.precHits;
+  document.getElementById('a3-hits').textContent=hits;
+  document.getElementById('a3-acc').textContent=shots?Math.round(hits/shots*100)+'%':'–';
+  document.getElementById('a3-over').textContent=a3.over;
+  document.getElementById('a3-ttk').textContent=a3.ttks.length?Math.round(a3.ttks.reduce((a,b)=>a+b,0)/a3.ttks.length)+'ms':'–';
+}
+function a3RenderProg(){
+  const bar=document.getElementById('a3-prog');bar.innerHTML='';
+  for(let i=0;i<A3_TOTAL;i++){
+    const d=document.createElement('div');d.className='sg-dot';
+    if(i<a3.idx)d.classList.add(i<A3_FLICK_N?'hit':'cur');
+    else if(i===a3.idx&&a3.running)d.classList.add('cur');
+    if(i===A3_FLICK_N)d.style.marginLeft='10px';
+    bar.appendChild(d);
+  }
+}
+
+/* ---- camera + rendering ---- */
+function a3Basis(){
+  const cy=Math.cos(a3.yaw),sy=Math.sin(a3.yaw),cp=Math.cos(a3.pitch),sp=Math.sin(a3.pitch);
+  return {
+    F:[cp*sy,sp,cp*cy],
+    R:[cy,0,-sy],
+    U:[-sp*sy,cp,-sp*cy]
+  };
+}
+function a3ToCam(p,b){
+  const vx=p[0],vy=p[1]-A3_EYE,vz=p[2];   /* eye at (0,A3_EYE,0) */
+  return [vx*b.R[0]+vy*b.R[1]+vz*b.R[2], vx*b.U[0]+vy*b.U[1]+vz*b.U[2], vx*b.F[0]+vy*b.F[1]+vz*b.F[2]];
+}
+function a3DrawScene(){
+  const c=a3Canvas(),ctx=c.getContext('2d'),w=c.width,h=c.height;
+  const focal=(h/2)/Math.tan(A3_FOV/2),cx=w/2,cyy=h/2,near=0.05,b=a3Basis();
+  const horizon=cyy+Math.tan(a3.pitch)*focal;
+  /* sky + floor split at the horizon */
+  let sky=ctx.createLinearGradient(0,0,0,Math.max(0,Math.min(h,horizon)));
+  sky.addColorStop(0,'#0c0c14');sky.addColorStop(1,'#13131d');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+  if(horizon<h){
+    let fl=ctx.createLinearGradient(0,Math.max(0,horizon),0,h);
+    fl.addColorStop(0,'#0a0a10');fl.addColorStop(1,'#05050a');
+    ctx.fillStyle=fl;ctx.fillRect(0,Math.max(0,horizon),w,h-Math.max(0,horizon));
+  }
+  function projCam(cp_){ return [cx+cp_[0]/cp_[2]*focal, cyy-cp_[1]/cp_[2]*focal]; }
+  /* clip a camera-space segment to the near plane, then draw */
+  function seg(p,q){
+    let a=a3ToCam(p,b),d=a3ToCam(q,b);
+    if(a[2]<near&&d[2]<near)return;
+    if(a[2]<near){const t=(near-a[2])/(d[2]-a[2]);a=[a[0]+(d[0]-a[0])*t,a[1]+(d[1]-a[1])*t,near];}
+    else if(d[2]<near){const t=(near-d[2])/(a[2]-d[2]);d=[d[0]+(a[0]-d[0])*t,d[1]+(a[1]-d[1])*t,near];}
+    const s1=projCam(a),s2=projCam(d);
+    ctx.beginPath();ctx.moveTo(s1[0],s1[1]);ctx.lineTo(s2[0],s2[1]);ctx.stroke();
+  }
+  /* floor grid */
+  ctx.strokeStyle='rgba(124,92,252,0.16)';ctx.lineWidth=1;
+  const N=9,S=3;
+  for(let i=-N;i<=N;i++){ seg([i*S,0,-N*S],[i*S,0,N*S]); seg([-N*S,0,i*S],[N*S,0,i*S]); }
+  /* target */
+  if(a3.tgt&&a3.running){
+    const t=a3.tgt;
+    const dir=[Math.cos(t.el)*Math.sin(t.az),Math.sin(t.el),Math.cos(t.el)*Math.cos(t.az)];
+    const P=[dir[0]*t.dist,A3_EYE+dir[1]*t.dist,dir[2]*t.dist];
+    const cp_=a3ToCam(P,b);
+    if(cp_[2]>near){
+      const sp_=projCam(cp_),sr=t.r/cp_[2]*focal;
+      const col=t.flick?'#ff4655':'#a48dfd';
+      const grd=ctx.createRadialGradient(sp_[0],sp_[1],sr*0.3,sp_[0],sp_[1],sr*2);
+      grd.addColorStop(0,col+'33');grd.addColorStop(1,'transparent');
+      ctx.fillStyle=grd;ctx.beginPath();ctx.arc(sp_[0],sp_[1],sr*2,0,7);ctx.fill();
+      ctx.beginPath();ctx.arc(sp_[0],sp_[1],sr,0,7);ctx.fillStyle=col+'2e';ctx.fill();
+      ctx.lineWidth=2;ctx.strokeStyle=col;ctx.stroke();
+      ctx.beginPath();ctx.arc(sp_[0],sp_[1],Math.max(2,sr*0.34),0,7);ctx.fillStyle=col;ctx.fill();
+      /* off-screen guide arrow */
+      if(sp_[0]<0||sp_[0]>w||sp_[1]<0||sp_[1]>h){
+        const ex=Math.max(18,Math.min(w-18,sp_[0])),ey=Math.max(18,Math.min(h-18,sp_[1]));
+        ctx.fillStyle=col;ctx.beginPath();ctx.arc(ex,ey,6,0,7);ctx.fill();
+      }
+    }
+  }
+  /* fixed centre crosshair */
+  ctx.strokeStyle='#22d68b';ctx.lineWidth=1.6;const gp=3,L=9;
+  ctx.beginPath();
+  ctx.moveTo(cx-gp-L,cyy);ctx.lineTo(cx-gp,cyy);
+  ctx.moveTo(cx+gp,cyy);ctx.lineTo(cx+gp+L,cyy);
+  ctx.moveTo(cx,cyy-gp-L);ctx.lineTo(cx,cyy-gp);
+  ctx.moveTo(cx,cyy+gp);ctx.lineTo(cx,cyy+gp+L);
+  ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cyy,1.3,0,7);ctx.fillStyle='#22d68b';ctx.fill();
+}
+
+/* ---- results & verdict ---- */
+function a3Finish(){
+  a3.running=false;
+  if(document.pointerLockElement===a3Canvas())document.exitPointerLock();
+  cancelAnimationFrame(a3.raf);
+  const shots=a3.flickShots+a3.precShots, hits=a3.flickHits+a3.precHits;
+  const acc=shots?hits/shots:0;
+  const flickAcc=a3.flickShots?a3.flickHits/a3.flickShots:0;
+  const precAcc=a3.precShots?a3.precHits/a3.precShots:0;
+  const ttk=a3.ttks.length?Math.round(a3.ttks.reduce((a,b)=>a+b,0)/a3.ttks.length):0;
+  const dpi=a3Dpi(),sens=a3Sens(),edpi=Math.round(dpi*sens);
+  /* directional bias: +1 overshoot .. -1 undershoot */
+  const dirShots=a3.over+a3.under;
+  const bias=dirShots?(a3.over-a3.under)/dirShots:0;
+
+  let title,advice,recEdpi=edpi;
+  if(acc>=0.72&&Math.abs(bias)<0.25){
+    title='✅ Your sensitivity is well calibrated';
+    advice='You hit consistently with balanced overshoot and undershoot — this eDPI suits your hand. Keep it and grind consistency.';
+  }else if(bias>0.25){
+    recEdpi=Math.round(edpi*0.9);
+    title='⚡ You\'re overshooting — try a touch lower';
+    advice='Your flicks fly past targets more than they fall short. Dropping ~10% gives your wrist more room to settle on target.';
+  }else if(bias<-0.25){
+    recEdpi=Math.round(edpi*1.1);
+    title='🐢 You\'re undershooting — try a touch higher';
+    advice='Your flicks keep stopping short of targets. Nudging ~10% up lets you reach them without straining.';
+  }else{
+    title='🎯 Decent — refine with reps';
+    advice='Accuracy has room to grow but your overshoot/undershoot is fairly even, so the sens itself is reasonable. Most of the gain here is practice.';
+  }
+
+  document.getElementById('a3-vt').textContent=title;
+  document.getElementById('a3-va').innerHTML=advice+(recEdpi!==edpi
+    ? ` <strong style="color:var(--text)">Try eDPI ${recEdpi} → ${a3FmtSens(recEdpi/dpi)} sens @ ${dpi} DPI.</strong>`
+    : ` <strong style="color:var(--text)">Stay at ${a3FmtSens(sens)} @ ${dpi} DPI (eDPI ${edpi}).</strong>`);
+  document.getElementById('a3-r-total').textContent=hits+'/'+shots;
+  document.getElementById('a3-r-flick').textContent=Math.round(flickAcc*100)+'%';
+  document.getElementById('a3-r-prec').textContent=Math.round(precAcc*100)+'%';
+  document.getElementById('a3-r-rt').textContent=ttk?ttk+'ms':'–';
+
+  const pin=document.getElementById('a3-biaspin');
+  pin.style.left=Math.max(4,Math.min(96,50+bias*46))+'%';
+  pin.style.background=Math.abs(bias)<0.25?'var(--green)':(bias>0?'var(--red)':'var(--amber)');
+
+  document.getElementById('a3-breakdown').textContent=
+    `Flicks: ${Math.round(flickAcc*100)}% · Precision: ${Math.round(precAcc*100)}%\n`+
+    `Overshot ${a3.over} target${a3.over===1?'':'s'}, undershot ${a3.under}.\n`+
+    `${ttk?'Average time-to-kill '+ttk+'ms.\n':''}`+
+    `Give any sensitivity change 1–2 weeks before judging it. Want the full 3-phase solver? Open the Sensitivity Finder.`;
+
+  document.getElementById('a3-verdict').classList.add('show');
+  a3ShowOverlay('🧊','Range complete','See your verdict below.','▶ Run again');
+  document.getElementById('a3-verdict').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function aim3dStop(){
+  if(a3&&a3.running){ a3.running=false; cancelAnimationFrame(a3.raf); }
+  if(document.pointerLockElement===a3Canvas())document.exitPointerLock();
+}
 </script>
 </body>
 </html>

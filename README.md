@@ -14,8 +14,12 @@ runs entirely in your browser.
   mistakes to fix, and a weekly aim-training plan based on your profile (DPI, sensitivity,
   eDPI, rank, experience, and self-reported aim problems).
 - 💬 **Quick answers** — tap a follow-up question for an instant, focused tip.
-- 🎮 **Built-in tools** — sensitivity converter, crosshair builder, target trainer, and
-  a sensitivity calibration game.
+- 🎮 **Built-in tools** — sensitivity converter, crosshair builder, target trainer,
+  a sensitivity calibration game, a 3-phase sensitivity finder, and a **3D aim range**.
+- 🧊 **3D aim range** — a real first-person flick range rendered in 3D (no engine, no
+  dependencies). Your mouse rotates the camera at your actual Valorant sensitivity
+  (0.07°/count, so cm/360 is accurate), and it reads your overshoot/undershoot to tell
+  you whether your sens is calibrated.
 
 ## Usage
 
