@@ -1,0 +1,115 @@
+# Golden retrieval set.
+#
+# Each entry is a question a real player would ask, plus the knowledge-base
+# document that SHOULD be retrieved for it. This is the regression harness for
+# the RAG layer: change the chunker, the embedder, the fusion weights or the
+# boosts, re-run scripts/eval_rag.py, and see whether the numbers moved.
+#
+# `profile` is optional and exercises personalization-driven retrieval.
+
+- q: Give me an attack strategy for Ascent
+  expect: maps/ascent-attack.md
+
+- q: How do I execute onto A site on Ascent?
+  expect: maps/ascent-attack.md
+
+- q: How should I set up defending Ascent?
+  expect: maps/ascent-defense.md
+
+- q: How do I retake B on Ascent?
+  expect: maps/ascent-defense.md
+
+# Site-specific phrasing. These are the cases that used to blend A-site notes
+# into a B-site answer; the contradiction counter is what actually guards them.
+- q: How do I hold B site on Ascent?
+  expect: maps/ascent-defense.md
+
+- q: Give me an A site execute on Ascent
+  expect: maps/ascent-attack.md
+
+- q: How do I attack B site on Ascent?
+  expect: maps/ascent-attack.md
+
+- q: What is Mid control on Ascent and why does it matter?
+  expect: [maps/ascent-attack.md, maps/ascent.md]
+
+- q: How do the teleporters work on Bind?
+  expect: maps/bind.md
+
+- q: Why are fakes so strong on Bind?
+  expect: maps/bind.md
+
+- q: How do I attack a three site map like Haven?
+  expect: maps/haven.md
+
+- q: Why is Split so hard to attack?
+  expect: maps/split.md
+
+- q: What are the rotating doors on Lotus for?
+  expect: maps/lotus.md
+
+- q: What does Jett's Tailwind do?
+  expect: agents/jett.md
+
+- q: Is Reyna a good agent to climb with?
+  expect: agents/reyna.md
+
+- q: How should I use Viper's wall?
+  expect: agents/viper.md
+
+- q: Which controller is easiest to learn?
+  expect: [agents/brimstone.md, roles/controller.md]
+
+- q: How do I anchor a site as Killjoy?
+  expect: agents/killjoy.md
+
+- q: When should I use Sage's wall?
+  expect: agents/sage.md
+
+- q: What does KAY/O suppression actually counter?
+  expect: agents/kayo.md
+
+- q: What is a duelist supposed to do?
+  expect: roles/duelist.md
+
+- q: What is the job of a sentinel?
+  expect: roles/sentinel.md
+
+- q: When should we force buy?
+  expect: strategy/economy.md
+
+- q: We keep half buying every round, is that bad?
+  expect: strategy/economy.md
+
+- q: How do I stop losing rounds after we plant?
+  expect: strategy/post-plant.md
+
+- q: Should I keep a molly for the defuse?
+  expect: strategy/post-plant.md
+
+- q: When should we rotate on defense?
+  expect: strategy/rotations.md
+
+- q: What actually counts as trading a teammate?
+  expect: strategy/trading-and-entries.md
+
+- q: What team comp should we run?
+  expect: strategy/team-comps.md
+
+- q: How do I lurk properly?
+  expect: strategy/mid-round.md
+
+- q: What is a default and when does it end?
+  expect: strategy/mid-round.md
+
+- q: I am stuck in silver, what am I doing wrong?
+  expect: ranks/low-elo.md
+  profile: {current_rank: silver, playstyle: balanced}
+
+- q: What is holding me back in gold?
+  expect: ranks/mid-elo.md
+  profile: {current_rank: gold, playstyle: aggressive}
+
+- q: How do I get out of ascendant?
+  expect: ranks/high-elo.md
+  profile: {current_rank: ascendant, playstyle: balanced}

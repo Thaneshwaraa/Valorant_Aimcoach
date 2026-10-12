@@ -287,6 +287,7 @@ footer{position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,14,0.9);back
 <header>
   <div class="logo"><div class="logo-mark">&#9678;</div>Valorant Aim Coach</div>
   <div class="header-right">
+    <a href="/" id="vc-coach-link" style="color:inherit;text-decoration:none;font-size:13px;font-weight:600;padding:6px 12px;border:1px solid rgba(255,255,255,.15);border-radius:6px;">&#8592; Coach</a>
     <div class="pulse-dot"></div>
     <button class="hdr-back" id="hdr-back" onclick="hideTool()">&#8592; Back</button>
   </div>
@@ -2123,6 +2124,10 @@ function sfLoadProfile(){ try{return JSON.parse(localStorage.getItem(SF_PROFILE_
 function sfSaveProfile(p){ try{localStorage.setItem(SF_PROFILE_KEY,JSON.stringify(p));}catch(e){} }
 function sfSaveToProfile(){
   if(!sf.result)return;
+  // Embedded in the coach: hand the measured setting to the coach profile too.
+  if(window.parent!==window){
+    window.parent.postMessage({type:'vc-sens',dpi:sf.result.dpi,sens:+sf.result.sens.toFixed(3)},location.origin);
+  }
   const p=sfLoadProfile();
   p.perfectSens={
     sens:+sf.result.sens.toFixed(3), edpi:sf.result.edpi, dpi:sf.result.dpi,
@@ -2477,6 +2482,30 @@ function aim3dStop(){
   if(a3&&a3.running){ a3.running=false; cancelAnimationFrame(a3.raf); }
   if(document.pointerLockElement===a3Canvas())document.exitPointerLock();
 }
+</script>
+<script>
+/* ---- Bridge to the Valorant Coach page ----
+   When this page runs inside the coach (iframe), the coach calls
+   vcApplyProfile() with the saved profile so every tool starts from the
+   player's real mouse settings and rank. */
+if(window.parent!==window){
+  const l=document.getElementById('vc-coach-link'); if(l) l.style.display='none';
+}
+window.vcApplyProfile=function(p){
+  if(!p) return;
+  const set=(id,v)=>{const el=document.getElementById(id); if(el&&v) el.value=v;};
+  if(p.dpi){ set('dpi',Math.min(3200,Math.max(100,Math.round(p.dpi/100)*100))); }
+  if(p.sensitivity){ set('sens',Math.min(200,Math.max(1,Math.round(p.sensitivity*100)))); }
+  if(p.dpi||p.sensitivity){ try{onSlider();}catch(e){} }
+  if(p.edpi){ set('sg-edpi',p.edpi); }
+  if(p.rank){
+    const r=p.rank.toLowerCase();
+    const label=['diamond','ascendant','immortal','radiant'].includes(r)?'Diamond+':r==='unranked'||!r?'Unranked':r[0].toUpperCase()+r.slice(1);
+    for(const c of document.querySelectorAll('.rchip')){
+      if(c.textContent.trim()===label){ c.parentElement.querySelectorAll('.chip,.rchip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); P.rank=label; }
+    }
+  }
+};
 </script>
 </body>
 </html>

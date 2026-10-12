@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.db
+*.db-journal
+data/chroma/
+data/voices/
+data/bm25_index.pkl
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+*.db-shm
+*.db-wal
